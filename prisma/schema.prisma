@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Group {
+  id           String       @id @default(uuid())
+  name         String
+  description  String?
+  inviteLink   String       @unique
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  guests       Guest[]
+  confirmation Confirmation?
+}
+
+model Guest {
+  id           String       @id @default(uuid())
+  name         String
+  email        String?
+  phone        String?
+  inviteLink   String       @unique
+  groupId      String?
+  group        Group?       @relation(fields: [groupId], references: [id])
+  giftSize     String?      // Tamanho da fralda (P, M, G, GG, etc.)
+  giftQuantity Int?         // Quantidade de fraldas
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  confirmation Confirmation?
+}
+
+model Confirmation {
+  id               String    @id @default(uuid())
+  confirmed        Boolean   @default(false)
+  guestId          String?   @unique
+  guest            Guest?    @relation(fields: [guestId], references: [id])
+  groupId          String?   @unique
+  group            Group?    @relation(fields: [groupId], references: [id])
+  numberOfPeople   Int?      // Número de pessoas confirmadas (para grupo)
+  confirmationDate DateTime?
+  notes            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  notifyEmail      Boolean   @default(false)
+}
