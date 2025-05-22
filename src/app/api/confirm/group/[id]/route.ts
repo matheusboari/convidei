@@ -8,7 +8,7 @@ interface Params {
 export async function POST(req: NextRequest, { params }: { params: Params }) {
   try {
     const { id } = params;
-    const { confirmed, numberOfPeople, notes } = await req.json();
+    const { confirmed, numberOfPeople, notes, confirmedMembers } = await req.json();
 
     // Verificar se o grupo existe
     const group = await prisma.group.findUnique({
@@ -36,6 +36,9 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     
     // Confirmar para cada membro do grupo
     for (const member of group.guests) {
+      // Se confirmedMembers for fornecido, usar a lista para determinar se o membro está confirmado
+      const isMemberConfirmed = confirmedMembers ? confirmedMembers.includes(member.id) : confirmed;
+      
       // Verificar se já existe uma confirmação para o membro
       const existingConfirmation = await prisma.confirmation.findUnique({
         where: { guestId: member.id }
@@ -46,8 +49,8 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
         await prisma.confirmation.update({
           where: { id: existingConfirmation.id },
           data: {
-            confirmed,
-            confirmationDate: confirmDate,
+            confirmed: isMemberConfirmed,
+            confirmationDate: isMemberConfirmed ? confirmDate : null,
           },
         });
       } else {
@@ -55,8 +58,8 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
         await prisma.confirmation.create({
           data: {
             guestId: member.id,
-            confirmed,
-            confirmationDate: confirmDate,
+            confirmed: isMemberConfirmed,
+            confirmationDate: isMemberConfirmed ? confirmDate : null,
           },
         });
       }
@@ -64,6 +67,7 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     
     // Se o líder não for membro do grupo, confirmar para ele também
     if (group.leader && !group.guests.find(guest => guest.id === group.leader?.id)) {
+      const isLeaderConfirmed = confirmedMembers ? confirmedMembers.includes(group.leader.id) : confirmed;
       const existingConfirmation = await prisma.confirmation.findUnique({
         where: { guestId: group.leader.id }
       });
@@ -72,16 +76,16 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
         await prisma.confirmation.update({
           where: { id: existingConfirmation.id },
           data: {
-            confirmed,
-            confirmationDate: confirmDate,
+            confirmed: isLeaderConfirmed,
+            confirmationDate: isLeaderConfirmed ? confirmDate : null,
           },
         });
       } else {
         await prisma.confirmation.create({
           data: {
             guestId: group.leader.id,
-            confirmed,
-            confirmationDate: confirmDate,
+            confirmed: isLeaderConfirmed,
+            confirmationDate: isLeaderConfirmed ? confirmDate : null,
           },
         });
       }
