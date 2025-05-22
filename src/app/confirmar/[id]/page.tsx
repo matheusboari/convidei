@@ -152,10 +152,12 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
                   <h3 className="font-semibold text-blue-700 mb-2">Seu presente sugerido</h3>
                   <p className="text-gray-700">
                     Fralda tamanho <span className="font-medium">{guest.giftSize}</span>
-                    {guest.giftQuantity && guest.giftQuantity > 1 
-                      ? ` (${guest.giftQuantity} unidades)`
-                      : ''}
                   </p>
+                  <p className="text-xs text-gray-500 mt-2">Marcas sugeridas:</p>
+                  <div className="flex justify-center gap-2 mt-1">
+                    <span className="inline-block bg-white border border-gray-200 rounded px-2 py-0.5 text-gray-600 text-sm">Huggies</span>
+                    <span className="inline-block bg-white border border-gray-200 rounded px-2 py-0.5 text-gray-600 text-sm">Pampers</span>
+                  </div>
                 </div>
               )}
             </div>
