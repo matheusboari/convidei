@@ -21,6 +21,8 @@ import { auth } from "../../../../auth";
 import { redirect } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import React from "react";
+import { ContactButton } from "@/components/dashboard/contact-button";
 
 export default async function ConfirmationsPage() {
   const session = await auth();
@@ -344,9 +346,9 @@ export default async function ConfirmationsPage() {
                       return acc;
                     }, {} as Record<string, typeof guestsWithoutConfirmation>)
                   ).map(([groupName, guests]) => (
-                    <>
+                    <React.Fragment key={groupName}>
                       {groupName !== "Sem Grupo" && (
-                        <TableRow key={groupName} className="bg-gray-50/50">
+                        <TableRow className="bg-gray-50/50">
                           <TableCell colSpan={4} className="py-2">
                             <div className="flex items-center">
                               <Users className="mr-2 h-4 w-4 text-blue-600" />
@@ -378,16 +380,11 @@ export default async function ConfirmationsPage() {
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <Link href={`mailto:${guest.email}`}>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  disabled={!guest.email}
-                                >
-                                  <Mail className="mr-1 h-4 w-4" />
-                                  Contatar
-                                </Button>
-                              </Link>
+                              <ContactButton
+                                guest={guest}
+                                isDisabled={!guest.phone || (guest.group?.leader?.id ? guest.group.leader.id !== guest.id : false)}
+                                disabledTitle={guest.group?.leader?.id ? (guest.group.leader.id !== guest.id ? "Apenas o líder do grupo pode ser contatado" : undefined) : undefined}
+                              />
                               {(!guest.group || guest.group.leader?.id === guest.id) ? (
                                 <Link href={`/confirmar/${guest.inviteLink}`} target="_blank">
                                   <Button
@@ -412,7 +409,7 @@ export default async function ConfirmationsPage() {
                           </TableCell>
                         </TableRow>
                       ))}
-                    </>
+                    </React.Fragment>
                   ))}
                 </TableBody>
               </Table>

@@ -128,7 +128,7 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
               <p className="text-gray-600">
                 {guest.confirmation?.confirmed 
                   ? "Sua presença está confirmada para o chá de fraldas da Antonella! 🎉"
-                  : "Você foi convidado para o chá de fraldas da Antonella"}
+                  : "Você foi convidado(a) para o chá de fraldas da Antonella"}
               </p>
             </div>
 
