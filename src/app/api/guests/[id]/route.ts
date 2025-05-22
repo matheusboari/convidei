@@ -19,7 +19,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
 
     const { id } = params;
     const body = await req.json();
-    const { name, email, phone, groupId, giftSize, giftQuantity } = body;
+    const { name, email, phone, groupId, giftSize, giftQuantity, isChild } = body;
 
     if (!name) {
       return new NextResponse(JSON.stringify({ error: "Nome é obrigatório" }), { 
@@ -39,6 +39,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
         groupId: groupId && groupId !== "nenhum" ? groupId : null,
         giftSize: giftSize && giftSize !== "nenhum" ? giftSize : null,
         giftQuantity: giftQuantity || 1,
+        isChild: isChild || false,
       },
     });
 

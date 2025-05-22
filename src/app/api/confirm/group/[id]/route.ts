@@ -1,0 +1,128 @@
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+
+interface Params {
+  id: string;
+}
+
+export async function POST(req: NextRequest, { params }: { params: Params }) {
+  try {
+    const { id } = params;
+    const { confirmed, numberOfPeople, notes } = await req.json();
+
+    // Verificar se o grupo existe
+    const group = await prisma.group.findUnique({
+      where: { id },
+      include: { 
+        guests: true,
+        leader: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      },
+    });
+
+    if (!group) {
+      return new NextResponse(JSON.stringify({ error: "Grupo não encontrado" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Data atual para registro da confirmação
+    const confirmDate = confirmed ? new Date() : null;
+    
+    // Confirmar para cada membro do grupo
+    for (const member of group.guests) {
+      // Verificar se já existe uma confirmação para o membro
+      const existingConfirmation = await prisma.confirmation.findUnique({
+        where: { guestId: member.id }
+      });
+      
+      if (existingConfirmation) {
+        // Atualizar confirmação existente
+        await prisma.confirmation.update({
+          where: { id: existingConfirmation.id },
+          data: {
+            confirmed,
+            confirmationDate: confirmDate,
+          },
+        });
+      } else {
+        // Criar nova confirmação
+        await prisma.confirmation.create({
+          data: {
+            guestId: member.id,
+            confirmed,
+            confirmationDate: confirmDate,
+          },
+        });
+      }
+    }
+    
+    // Se o líder não for membro do grupo, confirmar para ele também
+    if (group.leader && !group.guests.find(guest => guest.id === group.leader?.id)) {
+      const existingConfirmation = await prisma.confirmation.findUnique({
+        where: { guestId: group.leader.id }
+      });
+      
+      if (existingConfirmation) {
+        await prisma.confirmation.update({
+          where: { id: existingConfirmation.id },
+          data: {
+            confirmed,
+            confirmationDate: confirmDate,
+          },
+        });
+      } else {
+        await prisma.confirmation.create({
+          data: {
+            guestId: group.leader.id,
+            confirmed,
+            confirmationDate: confirmDate,
+          },
+        });
+      }
+    }
+    
+    // Também atualizar a confirmação do grupo
+    const groupConfirmation = await prisma.confirmation.findUnique({
+      where: { groupId: group.id }
+    });
+    
+    if (groupConfirmation) {
+      await prisma.confirmation.update({
+        where: { id: groupConfirmation.id },
+        data: {
+          confirmed,
+          numberOfPeople: numberOfPeople || group.guests.length,
+          confirmationDate: confirmDate,
+          notes: notes || null,
+        }
+      });
+    } else {
+      await prisma.confirmation.create({
+        data: {
+          groupId: group.id,
+          confirmed,
+          numberOfPeople: numberOfPeople || group.guests.length,
+          confirmationDate: confirmDate,
+          notes: notes || null,
+        }
+      });
+    }
+    
+    return new NextResponse(JSON.stringify({ success: true, groupConfirmation: true }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("[GROUP_CONFIRMATION_POST]", error);
+    return new NextResponse(JSON.stringify({ error: "Erro interno do servidor" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+} 

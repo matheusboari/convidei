@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Check, X, Mail, Calendar, Users } from "lucide-react";
+import { X, Mail, Calendar, Users } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { auth } from "../../../../auth";
@@ -43,6 +43,7 @@ export default async function ConfirmationsPage() {
             select: {
               id: true,
               name: true,
+              email: true,
             },
           },
         },
@@ -60,7 +61,15 @@ export default async function ConfirmationsPage() {
       confirmation: null,
     },
     include: {
-      group: true,
+      group: {
+        include: {
+          leader: {
+            select: {
+              id: true,
+            }
+          }
+        }
+      },
     },
     orderBy: {
       name: "asc",
@@ -146,7 +155,7 @@ export default async function ConfirmationsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Nome</TableHead>
+                    <TableHead>Grupo/Nome</TableHead>
                     <TableHead>Tipo</TableHead>
                     <TableHead>Pessoas</TableHead>
                     <TableHead>Confirmação</TableHead>
@@ -154,43 +163,68 @@ export default async function ConfirmationsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
+                  {/* Primeiro mostrar os grupos confirmados */}
                   {confirmations
-                    .filter(confirmation => confirmation.confirmed)
+                    .filter(confirmation => confirmation.confirmed && confirmation.group)
                     .map((confirmation) => (
-                    <TableRow key={confirmation.id}>
-                      <TableCell className="font-medium">
-                        {confirmation.guest ? (
-                          confirmation.guest.name
-                        ) : confirmation.group ? (
-                          confirmation.group.name
-                        ) : (
-                          "Desconhecido"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {confirmation.group ? (
+                      <TableRow key={confirmation.id} className="bg-blue-50/50">
+                        <TableCell className="font-medium">
+                          <div className="flex items-center">
+                            <Users className="mr-2 h-4 w-4 text-blue-600" />
+                            {confirmation.group?.name}
+                          </div>
+                          <div className="pl-6 mt-2 text-sm text-gray-500">
+                            {confirmation.group?.guests.map(guest => (
+                              <div key={guest.id}>{guest.name}</div>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell>
                           <span className="flex items-center">
                             <Users className="mr-1 h-4 w-4 text-blue-600" />
                             Grupo
                           </span>
-                        ) : (
+                        </TableCell>
+                        <TableCell>
+                          {confirmation.numberOfPeople || confirmation.group?.guests.length || 1}
+                        </TableCell>
+                        <TableCell>
+                          <span className="flex items-center">
+                            <Calendar className="mr-1 h-4 w-4 text-gray-500" />
+                            {formatDate(confirmation.confirmationDate)}
+                          </span>
+                        </TableCell>
+                        <TableCell className="max-w-xs truncate">
+                          {confirmation.notes || "-"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  
+                  {/* Depois mostrar os convidados individuais confirmados */}
+                  {confirmations
+                    .filter(confirmation => confirmation.confirmed && confirmation.guest && !confirmation.guest.groupId)
+                    .map((confirmation) => (
+                      <TableRow key={confirmation.id}>
+                        <TableCell className="font-medium">
+                          {confirmation.guest?.name}
+                        </TableCell>
+                        <TableCell>
                           <span>Individual</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {confirmation.numberOfPeople || 1}
-                      </TableCell>
-                      <TableCell>
-                        <span className="flex items-center">
-                          <Calendar className="mr-1 h-4 w-4 text-gray-500" />
-                          {formatDate(confirmation.confirmationDate)}
-                        </span>
-                      </TableCell>
-                      <TableCell className="max-w-xs truncate">
-                        {confirmation.notes || "-"}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                        <TableCell>
+                          {confirmation.numberOfPeople || 1}
+                        </TableCell>
+                        <TableCell>
+                          <span className="flex items-center">
+                            <Calendar className="mr-1 h-4 w-4 text-gray-500" />
+                            {formatDate(confirmation.confirmationDate)}
+                          </span>
+                        </TableCell>
+                        <TableCell className="max-w-xs truncate">
+                          {confirmation.notes || "-"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </div>
@@ -217,103 +251,168 @@ export default async function ConfirmationsPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Nome</TableHead>
+                    <TableHead>Grupo/Nome</TableHead>
                     <TableHead>Tipo</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {/* Convidados que explicitamente recusaram */}
+                  {/* Primeiro mostrar os grupos que recusaram */}
                   {confirmations
-                    .filter(confirmation => !confirmation.confirmed)
+                    .filter(confirmation => !confirmation.confirmed && confirmation.group)
                     .map((confirmation) => (
-                    <TableRow key={confirmation.id} className="opacity-70 bg-red-50">
-                      <TableCell className="font-medium">
-                        {confirmation.guest ? (
-                          confirmation.guest.name
-                        ) : confirmation.group ? (
-                          confirmation.group.name
-                        ) : (
-                          "Desconhecido"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {confirmation.group ? (
+                      <TableRow key={confirmation.id} className="opacity-70 bg-red-50">
+                        <TableCell className="font-medium">
+                          <div className="flex items-center">
+                            <Users className="mr-2 h-4 w-4 text-blue-600" />
+                            {confirmation.group?.name}
+                          </div>
+                          <div className="pl-6 mt-2 text-sm text-gray-500">
+                            {confirmation.group?.guests.map(guest => (
+                              <div key={guest.id}>{guest.name}</div>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell>
                           <span className="flex items-center">
                             <Users className="mr-1 h-4 w-4 text-blue-600" />
                             Grupo
                           </span>
-                        ) : (
-                          <span>Individual</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <span className="flex items-center text-red-600">
-                          <X className="mr-1 h-4 w-4" />
-                          Recusou
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Link href={`mailto:${confirmation.guest?.email}`}>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={!confirmation.guest?.email}
-                          >
-                            <Mail className="mr-1 h-4 w-4" />
-                            Contatar
-                          </Button>
-                        </Link>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  
-                  {/* Convidados sem confirmação */}
-                  {guestsWithoutConfirmation.map((guest) => (
-                    <TableRow key={guest.id}>
-                      <TableCell className="font-medium">
-                        {guest.name}
-                      </TableCell>
-                      <TableCell>
-                        {guest.group ? (
-                          <span className="flex items-center">
-                            <Users className="mr-1 h-4 w-4 text-blue-600" />
-                            Grupo
+                        </TableCell>
+                        <TableCell>
+                          <span className="flex items-center text-red-600">
+                            <X className="mr-1 h-4 w-4" />
+                            Recusou
                           </span>
-                        ) : (
-                          <span>Individual</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <span className="flex items-center text-orange-500">
-                          <X className="mr-1 h-4 w-4" />
-                          Sem resposta
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Link href={`mailto:${guest.email}`}>
+                        </TableCell>
+                        <TableCell>
+                          <Link href={`mailto:${confirmation.group?.guests[0]?.email}`}>
                             <Button
                               variant="outline"
                               size="sm"
-                              disabled={!guest.email}
+                              disabled={!confirmation.group?.guests[0]?.email}
                             >
                               <Mail className="mr-1 h-4 w-4" />
                               Contatar
                             </Button>
                           </Link>
-                          <Link href={`/confirmar/${guest.inviteLink}`} target="_blank">
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  
+                  {/* Depois mostrar os convidados individuais que recusaram */}
+                  {confirmations
+                    .filter(confirmation => !confirmation.confirmed && confirmation.guest && !confirmation.guest.groupId)
+                    .map((confirmation) => (
+                      <TableRow key={confirmation.id} className="opacity-70 bg-red-50">
+                        <TableCell className="font-medium">
+                          {confirmation.guest?.name}
+                        </TableCell>
+                        <TableCell>
+                          <span>Individual</span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="flex items-center text-red-600">
+                            <X className="mr-1 h-4 w-4" />
+                            Recusou
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <Link href={`mailto:${confirmation.guest?.email}`}>
                             <Button
+                              variant="outline"
                               size="sm"
-                              className="bg-purple-600 hover:bg-purple-700"
+                              disabled={!confirmation.guest?.email}
                             >
-                              Ver convite
+                              <Mail className="mr-1 h-4 w-4" />
+                              Contatar
                             </Button>
                           </Link>
-                        </div>
-                      </TableCell>
-                    </TableRow>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  
+                  {/* Agrupar convidados sem resposta por grupo */}
+                  {Object.entries(
+                    guestsWithoutConfirmation.reduce((acc, guest) => {
+                      const groupName = guest.group?.name || "Sem Grupo";
+                      if (!acc[groupName]) {
+                        acc[groupName] = [];
+                      }
+                      acc[groupName].push(guest);
+                      return acc;
+                    }, {} as Record<string, typeof guestsWithoutConfirmation>)
+                  ).map(([groupName, guests]) => (
+                    <>
+                      {groupName !== "Sem Grupo" && (
+                        <TableRow key={groupName} className="bg-gray-50/50">
+                          <TableCell colSpan={4} className="py-2">
+                            <div className="flex items-center">
+                              <Users className="mr-2 h-4 w-4 text-blue-600" />
+                              <span className="font-medium">{groupName}</span>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {guests.map((guest) => (
+                        <TableRow key={guest.id} className={groupName !== "Sem Grupo" ? "pl-4" : ""}>
+                          <TableCell className="font-medium">
+                            {guest.name}
+                          </TableCell>
+                          <TableCell>
+                            {guest.group ? (
+                              <span className="flex items-center">
+                                <Users className="mr-1 h-4 w-4 text-blue-600" />
+                                Grupo
+                              </span>
+                            ) : (
+                              <span>Individual</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <span className="flex items-center text-orange-500">
+                              <X className="mr-1 h-4 w-4" />
+                              Sem resposta
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Link href={`mailto:${guest.email}`}>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  disabled={!guest.email}
+                                >
+                                  <Mail className="mr-1 h-4 w-4" />
+                                  Contatar
+                                </Button>
+                              </Link>
+                              {(!guest.group || guest.group.leader?.id === guest.id) ? (
+                                <Link href={`/confirmar/${guest.inviteLink}`} target="_blank">
+                                  <Button
+                                    size="sm"
+                                    className="bg-purple-600 hover:bg-purple-700"
+                                  >
+                                    Ver convite
+                                  </Button>
+                                </Link>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-gray-400"
+                                  disabled
+                                  title="Apenas o líder do grupo pode confirmar a presença"
+                                >
+                                  Ver convite
+                                </Button>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </>
                   ))}
                 </TableBody>
               </Table>

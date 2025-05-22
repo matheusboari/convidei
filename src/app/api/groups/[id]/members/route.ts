@@ -70,4 +70,49 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
       headers: { "Content-Type": "application/json" }
     });
   }
+}
+
+export async function GET(req: NextRequest, { params }: { params: Params }) {
+  try {
+    const session = await auth();
+    
+    if (!session) {
+      return new NextResponse(JSON.stringify({ error: "Não autorizado" }), { 
+        status: 401,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    const { id } = params;
+
+    const group = await prisma.group.findUnique({
+      where: { id },
+      include: {
+        guests: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!group) {
+      return new NextResponse(JSON.stringify({ error: "Grupo não encontrado" }), { 
+        status: 404,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    return new NextResponse(JSON.stringify(group.guests), { 
+      status: 200,
+      headers: { "Content-Type": "application/json" }
+    });
+  } catch (error) {
+    console.error("[GROUP_MEMBERS_GET]", error);
+    return new NextResponse(JSON.stringify({ error: "Erro interno do servidor" }), { 
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
 } 

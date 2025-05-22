@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, description } = body;
+    const { name, description, leaderId } = body;
 
     if (!name) {
       return new NextResponse(JSON.stringify({ error: "Nome é obrigatório" }), { 
@@ -64,11 +64,15 @@ export async function POST(req: NextRequest) {
     // Gerar link de convite único
     const inviteLink = `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`;
 
+    // Converter "none" para null no leaderId
+    const effectiveLeaderId = leaderId === "none" ? null : leaderId || null;
+
     const group = await prisma.group.create({
       data: {
         name,
         description: description || null,
         inviteLink,
+        leaderId: effectiveLeaderId
       },
     });
 

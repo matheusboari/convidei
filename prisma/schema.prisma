@@ -25,25 +25,29 @@ model Group {
   name         String
   description  String?
   inviteLink   String       @unique
+  leaderId     String?      // ID do convidado líder do grupo
+  leader       Guest?       @relation("GroupLeader", fields: [leaderId], references: [id])
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
-  guests       Guest[]
+  guests       Guest[]      @relation("GroupMembers")
   confirmation Confirmation?
 }
 
 model Guest {
-  id           String       @id @default(uuid())
-  name         String
-  email        String?
-  phone        String?
-  inviteLink   String       @unique
-  groupId      String?
-  group        Group?       @relation(fields: [groupId], references: [id])
-  giftSize     String?      // Tamanho da fralda (P, M, G, GG, etc.)
-  giftQuantity Int?         // Quantidade de fraldas
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  confirmation Confirmation?
+  id             String       @id @default(uuid())
+  name           String
+  email          String?
+  phone          String?
+  inviteLink     String       @unique
+  groupId        String?
+  group          Group?       @relation("GroupMembers", fields: [groupId], references: [id])
+  leadingGroups  Group[]      @relation("GroupLeader")
+  giftSize       String?      // Tamanho da fralda (P, M, G, GG, etc.)
+  giftQuantity   Int?         // Quantidade de fraldas
+  isChild        Boolean      @default(false) // Indica se o convidado é uma criança
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  confirmation   Confirmation?
 }
 
 model Confirmation {
@@ -59,4 +63,16 @@ model Confirmation {
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   notifyEmail      Boolean   @default(false)
+  reminder         Reminder?
+}
+
+model Reminder {
+  id               String    @id @default(uuid())
+  confirmationId   String    @unique
+  confirmation     Confirmation @relation(fields: [confirmationId], references: [id])
+  scheduledFor     DateTime
+  sent            Boolean   @default(false)
+  sentAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }

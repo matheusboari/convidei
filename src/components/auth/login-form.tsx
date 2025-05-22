@@ -6,10 +6,8 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export function LoginForm() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +29,11 @@ export function LoginForm() {
       console.log("Resultado do login:", result);
 
       if (result?.error) {
-        toast.error(`Erro de login: ${result.error}`);
+        const errorMessage = result.error === "CredentialsSignin"
+          ? "Email ou senha incorretos"
+          : `Erro de login: ${result.error}`;
+        
+        toast.error(errorMessage);
         console.error("Erro de login:", result.error);
         setIsLoading(false);
         return;

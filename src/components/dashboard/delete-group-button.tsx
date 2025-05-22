@@ -8,7 +8,7 @@ interface DeleteGroupButtonProps {
 }
 
 export function DeleteGroupButton({ groupId }: DeleteGroupButtonProps) {
-  const handleDeleteClick = (e: React.MouseEvent) => {
+  const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!confirm("Tem certeza que deseja excluir este grupo? Isso removerá todos os convidados associados a ele.")) {
       e.preventDefault();
     }

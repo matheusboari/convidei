@@ -14,46 +14,96 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Users, Pencil, Trash, Link as LinkIcon, UserPlus } from "lucide-react";
+import { Users, Pencil, Link as LinkIcon, UserPlus, Crown, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { auth } from "../../../../auth";
 import { redirect } from "next/navigation";
 import { DeleteGroupButton } from "@/components/dashboard/delete-group-button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+interface GroupWithRelations {
+  id: string;
+  name: string;
+  description: string | null;
+  inviteLink: string;
+  leaderId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  leader: {
+    id: string;
+    name: string;
+    email: string | null;
+    inviteLink: string;
+  } | null;
+  _count: {
+    guests: number;
+  };
+  confirmation: {
+    id: string;
+    confirmed: boolean;
+  } | null;
+}
 
 export default async function GroupsPage() {
   const session = await auth();
-  
-  if (!session) {
-    redirect("/login");
+  if (!session?.user?.id) {
+    redirect('/login');
   }
-  
+
+  const userId = session.user.id;
+
   const groups = await prisma.group.findMany({
     include: {
+      leader: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          inviteLink: true,
+        }
+      },
+      guests: {
+        select: {
+          id: true,
+        },
+      },
+      confirmation: {
+        select: {
+          id: true,
+          confirmed: true,
+        }
+      },
       _count: {
         select: {
           guests: true,
         },
       },
-      confirmation: true,
     },
     orderBy: {
-      name: "asc",
+      name: 'asc',
     },
-  });
+  }) as GroupWithRelations[];
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight text-purple-800">
-          Grupos
-        </h1>
-        <Link href="/dashboard/grupos/adicionar">
-          <Button className="bg-purple-600 hover:bg-purple-700">
-            <Users className="mr-2 h-4 w-4" />
-            Adicionar Grupo
-          </Button>
-        </Link>
+        <div>
+          <h1 className="text-2xl font-bold">Grupos</h1>
+          <p className="text-gray-500">
+            Organize convidados em grupos para facilitar o gerenciamento
+          </p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Link href="/dashboard/grupos/adicionar">
+            <Button className="bg-purple-600 hover:bg-purple-700">
+              <Users className="mr-2 h-4 w-4" />
+              Novo Grupo
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Card>
@@ -81,73 +131,105 @@ export default async function GroupsPage() {
             </div>
           ) : (
             <div className="overflow-auto">
+              <Alert className="mb-4 bg-amber-50 border-amber-200">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-800">
+                  Para um grupo receber confirmação, é necessário definir um líder. O líder receberá o link para confirmar a presença de todos os membros.
+                </AlertDescription>
+              </Alert>
+              
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nome</TableHead>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead>Convidados</TableHead>
-                    <TableHead>Confirmação</TableHead>
-                    <TableHead>Ações</TableHead>
+                    <TableHead>Líder</TableHead>
+                    <TableHead className="text-center">Convidados</TableHead>
+                    <TableHead className="text-center">Confirmação</TableHead>
+                    <TableHead className="text-center">Link</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {groups.map((group) => (
                     <TableRow key={group.id}>
-                      <TableCell className="font-medium">{group.name}</TableCell>
-                      <TableCell>
-                        {group.description || "-"}
+                      <TableCell className="font-medium">
+                        <div className="flex items-center">
+                          <Link href={`/dashboard/grupos/${group.id}`}>
+                            {group.name}
+                          </Link>
+                        </div>
                       </TableCell>
                       <TableCell>
-                        {group._count.guests}
-                      </TableCell>
-                      <TableCell>
-                        {group.confirmation?.confirmed ? (
-                          <span className="flex items-center text-green-600">
-                            Confirmado
-                          </span>
+                        {group.leader ? (
+                          <div className="flex items-center">
+                            <Crown className="mr-2 h-4 w-4 text-amber-500" />
+                            {group.leader.name}
+                          </div>
                         ) : (
-                          <span className="flex items-center text-orange-500">
-                            Pendente
-                          </span>
+                          <Badge variant="outline" className="text-gray-400 border-gray-200">
+                            Não definido
+                          </Badge>
                         )}
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            asChild
-                          >
-                            <Link href={`/dashboard/grupos/${group.id}`}>
+                      <TableCell className="text-center">
+                        {group._count.guests}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {group.confirmation?.confirmed ? (
+                          <Badge variant="success" className="bg-green-100 text-green-800 border-green-200">
+                            Confirmado
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-gray-400 border-gray-200">
+                            Pendente
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div>
+                                {group.leader ? (
+                                  <Link
+                                    href={`/confirmar/${group.leader.inviteLink}`}
+                                    target="_blank"
+                                    className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors"
+                                  >
+                                    <LinkIcon className="h-4 w-4" />
+                                  </Link>
+                                ) : (
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8 text-gray-300 border-gray-200 cursor-not-allowed"
+                                    disabled
+                                  >
+                                    <LinkIcon className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {group.leader
+                                ? "Link de confirmação do grupo"
+                                : "Defina um líder para obter o link de confirmação"}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end space-x-1">
+                          <Link href={`/dashboard/grupos/${group.id}`}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
                               <Pencil className="h-4 w-4" />
-                              <span className="sr-only">Editar</span>
-                            </Link>
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            asChild
-                          >
-                            <Link href={`/dashboard/grupos/${group.id}/membros`}>
+                            </Button>
+                          </Link>
+                          <Link href={`/dashboard/grupos/${group.id}/membros`}>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
                               <UserPlus className="h-4 w-4" />
-                              <span className="sr-only">Adicionar Membros</span>
-                            </Link>
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="text-purple-600 hover:text-purple-700"
-                            asChild
-                          >
-                            <Link
-                              href={`/confirmar/${group.inviteLink}`}
-                              target="_blank"
-                            >
-                              <LinkIcon className="h-4 w-4" />
-                              <span className="sr-only">Link de Convite</span>
-                            </Link>
-                          </Button>
+                            </Button>
+                          </Link>
                           <DeleteGroupButton groupId={group.id} />
                         </div>
                       </TableCell>

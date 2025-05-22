@@ -1,0 +1,8 @@
+nome,email,telefone,grupo,tamanho_fralda,quantidade_fralda,crianca,lider_grupo
+João Silva,joao@email.com,11999999999,Família Silva,M,2,não,sim
+Maria Silva,maria@email.com,11999999999,Família Silva,P,1,não,não
+Pedro Silva,pedro@email.com,11999999999,Família Silva,não,0,sim,não
+Ana Santos,ana@email.com,11888888888,Família Santos,G,3,não,sim
+Carlos Santos,carlos@email.com,11888888888,Família Santos,M,2,não,não
+Julia Santos,julia@email.com,11888888888,Família Santos,não,0,sim,não
+Roberto Oliveira,roberto@email.com,,,XG,1,não,não 

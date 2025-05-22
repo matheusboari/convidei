@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, email, phone, groupId, giftSize, giftQuantity } = body;
+    const { name, email, phone, groupId, giftSize, giftQuantity, isChild } = body;
 
     if (!name) {
       return new NextResponse(JSON.stringify({ error: "Nome é obrigatório" }), { 
@@ -66,7 +66,8 @@ export async function POST(req: NextRequest) {
         phone: phone || null,
         groupId: groupId && groupId !== "nenhum" ? groupId : null,
         giftSize: giftSize && giftSize !== "nenhum" ? giftSize : null,
-        giftQuantity: giftQuantity || 1,
+        giftQuantity: giftQuantity || null,
+        isChild: isChild || false,
         inviteLink,
       },
     });

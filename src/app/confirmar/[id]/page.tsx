@@ -20,6 +20,12 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
       include: {
         confirmation: true,
         group: true,
+        leadingGroups: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
       },
     });
 
@@ -29,25 +35,86 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
 
     // Se for um grupo, incluir informações do grupo
     let groupInfo = null;
+    
+    // Verificar se o convidado é membro de um grupo
     if (guest.group) {
-      const groupGuests = await prisma.guest.findMany({
+      // Buscar o líder do grupo
+      const group = await prisma.group.findUnique({
         where: {
-          groupId: guest.group.id,
-          id: {
-            not: guest.id,
-          },
+          id: guest.group.id,
         },
-        select: {
-          id: true,
-          name: true,
-        },
+        include: {
+          leader: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        }
       });
+      
+      // Verificar se o convidado é o líder do grupo
+      const isLeader = group?.leaderId === guest.id;
+      
+      // Se não for o líder e o grupo tiver um líder, não permitir gerenciar o grupo
+      if (!isLeader && group?.leaderId) {
+        groupInfo = {
+          id: guest.group.id,
+          name: guest.group.name,
+          members: [],
+          hasLeader: true,
+          isLeader: false,
+          leaderName: group.leader?.name || "Líder"
+        };
+      } else {
+        // Buscar outros membros do grupo
+        const groupGuests = await prisma.guest.findMany({
+          where: {
+            groupId: guest.group.id,
+            id: {
+              not: guest.id,
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+          },
+        });
 
-      groupInfo = {
-        id: guest.group.id,
-        name: guest.group.name,
-        members: groupGuests,
-      };
+        groupInfo = {
+          id: guest.group.id,
+          name: guest.group.name,
+          members: groupGuests,
+          hasLeader: !!group?.leaderId,
+          isLeader: isLeader,
+          leaderName: group?.leader?.name
+        };
+      }
+    }
+    
+    // Verificar se o convidado é líder de outro grupo
+    const leadingGroups = [];
+    if (guest.leadingGroups && guest.leadingGroups.length > 0) {
+      for (const group of guest.leadingGroups) {
+        const members = await prisma.guest.findMany({
+          where: {
+            groupId: group.id,
+            id: {
+              not: guest.id,
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+          },
+        });
+        
+        leadingGroups.push({
+          id: group.id,
+          name: group.name,
+          members: members
+        });
+      }
     }
 
     return (
@@ -77,6 +144,7 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
               <GuestConfirmationForm 
                 guest={guest} 
                 groupInfo={groupInfo}
+                leadingGroups={leadingGroups.length > 0 ? leadingGroups : undefined}
               />
 
               {guest.giftSize && (

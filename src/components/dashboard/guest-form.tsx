@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface GuestFormProps {
   initialData?: {
@@ -17,6 +18,7 @@ interface GuestFormProps {
     groupId?: string;
     giftSize?: string;
     giftQuantity?: number;
+    isChild?: boolean;
   };
   groups?: {
     id: string;
@@ -35,13 +37,23 @@ export function GuestForm({ initialData, groups = [], isEditing = false }: Guest
     groupId: initialData?.groupId || "",
     giftSize: initialData?.giftSize || "",
     giftQuantity: initialData?.giftQuantity?.toString() || "1",
+    isChild: initialData?.isChild || false,
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement> | { name: string; value: string }
+    e: React.ChangeEvent<HTMLInputElement> | { name: string; value: string | boolean }
   ) => {
     const { name, value } = "target" in e ? e.target : e;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    if (name === "giftSize" && value === "nenhum") {
+      setFormData((prev) => ({ 
+        ...prev, 
+        [name]: value,
+        giftQuantity: "" 
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,7 +68,9 @@ export function GuestForm({ initialData, groups = [], isEditing = false }: Guest
         },
         body: JSON.stringify({
           ...formData,
-          giftQuantity: formData.giftQuantity ? parseInt(formData.giftQuantity) : undefined,
+          giftQuantity: formData.giftQuantity && formData.giftSize !== "nenhum" 
+            ? parseInt(formData.giftQuantity) 
+            : null,
         }),
       });
 
@@ -117,6 +131,22 @@ export function GuestForm({ initialData, groups = [], isEditing = false }: Guest
           />
         </div>
 
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="isChild" 
+            checked={formData.isChild}
+            onCheckedChange={(checked) => 
+              handleChange({ name: "isChild", value: checked === true })
+            }
+          />
+          <Label 
+            htmlFor="isChild" 
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Este convidado é uma criança
+          </Label>
+        </div>
+
         {groups.length > 0 && (
           <div className="space-y-2">
             <Label htmlFor="groupId">Grupo (opcional)</Label>
@@ -159,18 +189,20 @@ export function GuestForm({ initialData, groups = [], isEditing = false }: Guest
           </Select>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="giftQuantity">Quantidade de Fraldas</Label>
-          <Input
-            id="giftQuantity"
-            name="giftQuantity"
-            type="number"
-            min="1"
-            placeholder="1"
-            value={formData.giftQuantity}
-            onChange={handleChange}
-          />
-        </div>
+        {formData.giftSize && formData.giftSize !== "nenhum" && (
+          <div className="space-y-2">
+            <Label htmlFor="giftQuantity">Quantidade de Fraldas (opcional)</Label>
+            <Input
+              id="giftQuantity"
+              name="giftQuantity"
+              type="number"
+              min="1"
+              placeholder="1"
+              value={formData.giftQuantity}
+              onChange={handleChange}
+            />
+          </div>
+        )}
       </div>
 
       <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700" disabled={isLoading}>

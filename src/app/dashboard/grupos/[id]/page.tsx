@@ -21,6 +21,12 @@ export default async function EditGroupPage({ params }: EditGroupPageProps) {
     where: {
       id: params.id,
     },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      leaderId: true,
+    }
   });
 
   if (!group) {
@@ -48,6 +54,7 @@ export default async function EditGroupPage({ params }: EditGroupPageProps) {
               id: group.id,
               name: group.name,
               description: group.description || "",
+              leaderId: group.leaderId || "",
             }}
             isEditing
           />

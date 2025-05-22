@@ -61,29 +61,32 @@ export default async function PresentesPage() {
 
   // Calcular totais
   convidados.forEach(convidado => {
-    const tamanho = convidado.giftSize || "Não Especificado";
-    const quantidade = convidado.giftQuantity || 1;
-    const confirmado = convidado.confirmation?.confirmed || false;
+    // Só contabilizar se tiver tamanho de fralda especificado
+    if (convidado.giftSize && convidado.giftSize !== "nenhum") {
+      const tamanho = convidado.giftSize;
+      const quantidade = convidado.giftQuantity || 1;
+      const confirmado = convidado.confirmation?.confirmed || false;
 
-    // Inicializar o tamanho se não existir
-    if (!resumoFraldas.porTamanho[tamanho]) {
-      resumoFraldas.porTamanho[tamanho] = {
-        confirmadas: 0,
-        pendentes: 0,
-        total: 0,
-      };
-    }
+      // Inicializar o tamanho se não existir
+      if (!resumoFraldas.porTamanho[tamanho]) {
+        resumoFraldas.porTamanho[tamanho] = {
+          confirmadas: 0,
+          pendentes: 0,
+          total: 0,
+        };
+      }
 
-    if (confirmado) {
-      resumoFraldas.porTamanho[tamanho].confirmadas += quantidade;
-      resumoFraldas.total.confirmadas += quantidade;
-    } else {
-      resumoFraldas.porTamanho[tamanho].pendentes += quantidade;
-      resumoFraldas.total.pendentes += quantidade;
+      if (confirmado) {
+        resumoFraldas.porTamanho[tamanho].confirmadas += quantidade;
+        resumoFraldas.total.confirmadas += quantidade;
+      } else {
+        resumoFraldas.porTamanho[tamanho].pendentes += quantidade;
+        resumoFraldas.total.pendentes += quantidade;
+      }
+      
+      resumoFraldas.porTamanho[tamanho].total += quantidade;
+      resumoFraldas.total.total += quantidade;
     }
-    
-    resumoFraldas.porTamanho[tamanho].total += quantidade;
-    resumoFraldas.total.total += quantidade;
   });
 
   // Calcular valor total estimado

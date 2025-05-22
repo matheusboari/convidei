@@ -60,7 +60,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
 
     const { id } = params;
     const body = await req.json();
-    const { name, description } = body;
+    const { name, description, leaderId } = body;
 
     if (!name) {
       return new NextResponse(JSON.stringify({ error: "Nome é obrigatório" }), { 
@@ -69,11 +69,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
       });
     }
 
+    // Converter "none" para null no leaderId
+    const effectiveLeaderId = leaderId === "none" ? null : leaderId || null;
+
     const group = await prisma.group.update({
       where: { id },
       data: {
         name,
         description: description || null,
+        leaderId: effectiveLeaderId
       },
     });
 
