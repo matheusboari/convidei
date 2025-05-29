@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Trash } from 'lucide-react';
 
 interface DeleteGuestButtonProps {
   guestId: string;
@@ -9,7 +9,7 @@ interface DeleteGuestButtonProps {
 
 export function DeleteGuestButton({ guestId }: DeleteGuestButtonProps) {
   const handleDeleteClick = (e: React.MouseEvent) => {
-    if (!confirm("Tem certeza que deseja excluir este convidado?")) {
+    if (!confirm('Tem certeza que deseja excluir este convidado?')) {
       e.preventDefault();
     }
   };

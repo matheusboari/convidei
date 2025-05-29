@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import React from "react";
-import { cn } from "@/lib/utils";
+import React from 'react';
+import { cn } from '@/lib/utils';
 
 interface ProgressCircleProps {
   value: number;
-  size?: number | "sm" | "md" | "lg";
+  size?: number | 'sm' | 'md' | 'lg';
   strokeWidth?: number;
   className?: string;
   textClassName?: string;
@@ -24,17 +24,17 @@ export function ProgressCircle({
   className,
   textClassName,
   showPercentage = true,
-  color = "hsl(var(--primary))",
-  bgColor = "hsl(var(--muted))",
+  color = 'hsl(var(--primary))',
+  bgColor = 'hsl(var(--muted))',
 }: ProgressCircleProps) {
   // Converter string de tamanho para número
   let sizeNumber = size;
-  if (size === "sm") sizeNumber = 60;
-  if (size === "md") sizeNumber = 100;
-  if (size === "lg") sizeNumber = 120;
+  if (size === 'sm') sizeNumber = 60;
+  if (size === 'md') sizeNumber = 100;
+  if (size === 'lg') sizeNumber = 120;
   
   // Converter para número garantindo que é um valor numérico
-  const sizeValue = typeof sizeNumber === "number" ? sizeNumber : 100;
+  const sizeValue = typeof sizeNumber === 'number' ? sizeNumber : 100;
   
   const normalizedValue = Math.min(100, Math.max(0, value));
   const radius = (sizeValue - strokeWidth) / 2;
@@ -42,7 +42,7 @@ export function ProgressCircle({
   const strokeDashoffset = circumference - (normalizedValue / 100) * circumference;
 
   return (
-    <div className={cn("relative inline-flex items-center justify-center", className)} style={{ height: sizeValue, width: sizeValue }}>
+    <div className={cn('relative inline-flex items-center justify-center', className)} style={{ height: sizeValue, width: sizeValue }}>
       <svg className="absolute" width={sizeValue} height={sizeValue}>
         <circle
           className="transition-all duration-300 ease-in-out"
@@ -68,7 +68,7 @@ export function ProgressCircle({
         />
       </svg>
       {showPercentage && (
-        <div className={cn("text-center font-medium", textClassName)}>
+        <div className={cn('text-center font-medium', textClassName)}>
           <span>{Math.round(normalizedValue)}%</span>
         </div>
       )}

@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface Guest {
   id: string;
@@ -22,11 +22,11 @@ interface GroupMembersFormProps {
 export function GroupMembersForm({ groupId, availableGuests }: GroupMembersFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedGuestId, setSelectedGuestId] = useState<string>("");
+  const [selectedGuestId, setSelectedGuestId] = useState<string>('');
 
   const handleAddMember = async () => {
     if (!selectedGuestId) {
-      toast.error("Selecione um convidado para adicionar ao grupo");
+      toast.error('Selecione um convidado para adicionar ao grupo');
       return;
     }
 
@@ -34,9 +34,9 @@ export function GroupMembersForm({ groupId, availableGuests }: GroupMembersFormP
 
     try {
       const response = await fetch(`/api/groups/${groupId}/members`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           guestId: selectedGuestId,
@@ -44,14 +44,14 @@ export function GroupMembersForm({ groupId, availableGuests }: GroupMembersFormP
       });
 
       if (!response.ok) {
-        throw new Error("Falha ao adicionar membro ao grupo");
+        throw new Error('Falha ao adicionar membro ao grupo');
       }
 
-      toast.success("Membro adicionado ao grupo com sucesso!");
-      setSelectedGuestId("");
+      toast.success('Membro adicionado ao grupo com sucesso!');
+      setSelectedGuestId('');
       router.refresh();
     } catch (error) {
-      toast.error("Ocorreu um erro ao adicionar o membro ao grupo");
+      toast.error('Ocorreu um erro ao adicionar o membro ao grupo');
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -83,7 +83,7 @@ export function GroupMembersForm({ groupId, availableGuests }: GroupMembersFormP
             disabled={isLoading || !selectedGuestId}
             className="bg-purple-600 hover:bg-purple-700"
           >
-            {isLoading ? "Adicionando..." : "Adicionar"}
+            {isLoading ? 'Adicionando...' : 'Adicionar'}
           </Button>
         </div>
       </div>

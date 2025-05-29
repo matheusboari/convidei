@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "../../../../../../auth";
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { auth } from '../../../../../../auth';
 
 interface Params {
   id: string;
@@ -11,9 +11,9 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     const session = await auth();
     
     if (!session) {
-      return new NextResponse(JSON.stringify({ error: "Não autorizado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Não autorizado' }), { 
         status: 401,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -21,9 +21,9 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     const { guestId } = await req.json();
 
     if (!guestId) {
-      return new NextResponse(JSON.stringify({ error: "ID do convidado é obrigatório" }), { 
+      return new NextResponse(JSON.stringify({ error: 'ID do convidado é obrigatório' }), { 
         status: 400,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -33,9 +33,9 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     });
 
     if (!group) {
-      return new NextResponse(JSON.stringify({ error: "Grupo não encontrado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Grupo não encontrado' }), { 
         status: 404,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -45,9 +45,9 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     });
 
     if (!guest) {
-      return new NextResponse(JSON.stringify({ error: "Convidado não encontrado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Convidado não encontrado' }), { 
         status: 404,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -61,13 +61,13 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
 
     return new NextResponse(JSON.stringify(updatedGuest), { 
       status: 200,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error("[GROUP_MEMBERS_POST]", error);
-    return new NextResponse(JSON.stringify({ error: "Erro interno do servidor" }), { 
+    console.error('[GROUP_MEMBERS_POST]', error);
+    return new NextResponse(JSON.stringify({ error: 'Erro interno do servidor' }), { 
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 }
@@ -77,9 +77,9 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     const session = await auth();
     
     if (!session) {
-      return new NextResponse(JSON.stringify({ error: "Não autorizado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Não autorizado' }), { 
         status: 401,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -98,21 +98,21 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     });
 
     if (!group) {
-      return new NextResponse(JSON.stringify({ error: "Grupo não encontrado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Grupo não encontrado' }), { 
         status: 404,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
     return new NextResponse(JSON.stringify(group.guests), { 
       status: 200,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error("[GROUP_MEMBERS_GET]", error);
-    return new NextResponse(JSON.stringify({ error: "Erro interno do servidor" }), { 
+    console.error('[GROUP_MEMBERS_GET]', error);
+    return new NextResponse(JSON.stringify({ error: 'Erro interno do servidor' }), { 
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 } 

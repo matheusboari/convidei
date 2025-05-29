@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
 interface Params {
   id: string;
@@ -15,14 +15,14 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
       where: { id },
       include: { 
         confirmation: true,
-        group: true 
+        group: true, 
       },
     });
 
     if (!guest) {
-      return new NextResponse(JSON.stringify({ error: "Convidado não encontrado" }), {
+      return new NextResponse(JSON.stringify({ error: 'Convidado não encontrado' }), {
         status: 404,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -37,11 +37,11 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
       // Buscar todos os membros do grupo
       const groupMembers = await prisma.guest.findMany({
         where: { 
-          groupId: guest.groupId 
+          groupId: guest.groupId, 
         },
         include: {
-          confirmation: true
-        }
+          confirmation: true,
+        },
       });
       
       // Confirmar para cada membro do grupo
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
       // Também atualizar a confirmação do grupo
       if (guest.group) {
         const groupConfirmation = await prisma.confirmation.findFirst({
-          where: { groupId: guest.group.id }
+          where: { groupId: guest.group.id },
         });
         
         if (groupConfirmation) {
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
               numberOfPeople: numberOfPeople || null,
               confirmationDate: confirmDate,
               notes: notes || null,
-            }
+            },
           });
         } else {
           await prisma.confirmation.create({
@@ -95,14 +95,14 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
               numberOfPeople: numberOfPeople || null,
               confirmationDate: confirmDate,
               notes: notes || null,
-            }
+            },
           });
         }
       }
       
       return new NextResponse(JSON.stringify({ success: true, groupConfirmation: true }), {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       });
     } else {
       // Caso contrário, confirmar apenas para o convidado individual
@@ -134,14 +134,14 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
 
       return new NextResponse(JSON.stringify({ success: true, confirmation }), {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       });
     }
   } catch (error) {
-    console.error("[CONFIRMATION_POST]", error);
-    return new NextResponse(JSON.stringify({ error: "Erro interno do servidor" }), {
+    console.error('[CONFIRMATION_POST]', error);
+    return new NextResponse(JSON.stringify({ error: 'Erro interno do servidor' }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 } 

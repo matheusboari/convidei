@@ -1,7 +1,7 @@
-import type { NextAuthConfig } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcrypt";
-import prisma from "./src/lib/prisma";
+import type { NextAuthConfig } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { compare } from 'bcrypt';
+import prisma from './src/lib/prisma';
 
 // Definir tipagem para usuário personalizado
 type UserWithRole = {
@@ -15,15 +15,15 @@ type UserWithRole = {
 export const authConfig: NextAuthConfig = {
   providers: [
     CredentialsProvider({
-      id: "credentials",
-      name: "Credentials",
+      id: 'credentials',
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          console.log("Credenciais incompletas");
+          console.log('Credenciais incompletas');
           return null;
         }
         
@@ -33,39 +33,39 @@ export const authConfig: NextAuthConfig = {
           const password = credentials.password.toString();
           
           const user = await prisma.user.findUnique({
-            where: { email }
+            where: { email },
           });
           
           if (!user) {
-            console.log("Usuário não encontrado:", email);
+            console.log('Usuário não encontrado:', email);
             return null;
           }
           
           const passwordMatch = await compare(password, user.password);
           
           if (!passwordMatch) {
-            console.log("Senha incorreta para usuário:", email);
+            console.log('Senha incorreta para usuário:', email);
             return null;
           }
           
-          console.log("Login bem-sucedido para:", email);
+          console.log('Login bem-sucedido para:', email);
           
           return {
             id: user.id,
             email: user.email,
             name: user.name,
-            role: user.role
+            role: user.role,
           };
         } catch (error) {
-          console.error("Erro na autenticação:", error);
+          console.error('Erro na autenticação:', error);
           return null;
         }
-      }
-    })
+      },
+    }),
   ],
   pages: {
-    signIn: "/login",
-    error: "/login",
+    signIn: '/login',
+    error: '/login',
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -73,7 +73,7 @@ export const authConfig: NextAuthConfig = {
         return {
           ...token,
           id: user.id,
-          role: user.role
+          role: user.role,
         };
       }
       return token;
@@ -84,10 +84,10 @@ export const authConfig: NextAuthConfig = {
         user: {
           ...session.user,
           id: token.id as string,
-          role: token.role as string
-        }
+          role: token.role as string,
+        },
       };
-    }
+    },
   },
-  debug: process.env.NODE_ENV === "development",
+  debug: process.env.NODE_ENV === 'development',
 }; 

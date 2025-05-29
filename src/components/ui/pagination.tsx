@@ -1,6 +1,6 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "./button";
-import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from './button';
+import { cn } from '@/lib/utils';
 
 interface PaginationProps {
   currentPage: number;
@@ -28,7 +28,7 @@ export function Pagination({
   };
 
   return (
-    <div className={cn("flex items-center justify-center gap-2", className)}>
+    <div className={cn('flex items-center justify-center gap-2', className)}>
       <Button
         variant="outline"
         size="icon"

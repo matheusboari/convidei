@@ -1,24 +1,24 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { UserPlus } from "lucide-react";
-import Link from "next/link";
-import prisma from "@/lib/prisma";
-import { auth } from "../../../../auth";
-import { redirect } from "next/navigation";
-import { ImportGuestsButton } from "@/components/dashboard/import-guests-button";
-import { GuestsList } from "@/components/dashboard/guests-list";
+} from '@/components/ui/card';
+import { UserPlus } from 'lucide-react';
+import Link from 'next/link';
+import prisma from '@/lib/prisma';
+import { auth } from '../../../../auth';
+import { redirect } from 'next/navigation';
+import { ImportGuestsButton } from '@/components/dashboard/import-guests-button';
+import { GuestsList } from '@/components/dashboard/guests-list';
 
 export default async function GuestsPage() {
   const session = await auth();
   
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const guests = await prisma.guest.findMany({
@@ -28,14 +28,14 @@ export default async function GuestsPage() {
           leader: {
             select: {
               id: true,
-            }
-          }
-        }
+            },
+          },
+        },
       },
       confirmation: true,
     },
     orderBy: {
-      name: "asc",
+      name: 'asc',
     },
   });
 

@@ -1,8 +1,8 @@
-import { GuestForm } from "@/components/dashboard/guest-form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import prisma from "@/lib/prisma";
-import { auth } from "../../../../../auth";
-import { redirect, notFound } from "next/navigation";
+import { GuestForm } from '@/components/dashboard/guest-form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import prisma from '@/lib/prisma';
+import { auth } from '../../../../../auth';
+import { redirect, notFound } from 'next/navigation';
 
 interface EditGuestPageProps {
   params: {
@@ -14,7 +14,7 @@ export default async function EditGuestPage({ params }: EditGuestPageProps) {
   const session = await auth();
   
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
   
   const guest = await prisma.guest.findUnique({
@@ -34,7 +34,7 @@ export default async function EditGuestPage({ params }: EditGuestPageProps) {
       name: true,
     },
     orderBy: {
-      name: "asc",
+      name: 'asc',
     },
   });
 
@@ -58,10 +58,10 @@ export default async function EditGuestPage({ params }: EditGuestPageProps) {
             initialData={{
               id: guest.id,
               name: guest.name,
-              email: guest.email || "",
-              phone: guest.phone || "",
-              groupId: guest.groupId || "",
-              giftSize: guest.giftSize || "",
+              email: guest.email || '',
+              phone: guest.phone || '',
+              groupId: guest.groupId || '',
+              giftSize: guest.giftSize || '',
               giftQuantity: guest.giftQuantity || 1,
             }}
             groups={groups}

@@ -1,15 +1,15 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { User, UserPlus, UserCheck, Users, Gift, Calendar } from "lucide-react";
-import prisma from "@/lib/prisma";
-import { auth } from "../../../auth";
-import { redirect } from "next/navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { User, UserPlus, UserCheck, Users, Gift, Calendar } from 'lucide-react';
+import prisma from '@/lib/prisma';
+import { auth } from '../../../auth';
+import { redirect } from 'next/navigation';
 
 export default async function DashboardPage() {
   const session = await auth();
   
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
   
   // Buscar estatísticas do banco de dados

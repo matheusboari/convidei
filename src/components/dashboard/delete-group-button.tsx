@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import { Trash } from 'lucide-react';
 
 interface DeleteGroupButtonProps {
   groupId: string;
@@ -9,7 +9,7 @@ interface DeleteGroupButtonProps {
 
 export function DeleteGroupButton({ groupId }: DeleteGroupButtonProps) {
   const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!confirm("Tem certeza que deseja excluir este grupo? Isso removerá todos os convidados associados a ele.")) {
+    if (!confirm('Tem certeza que deseja excluir este grupo? Isso removerá todos os convidados associados a ele.')) {
       e.preventDefault();
     }
   };

@@ -1,56 +1,56 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { toast } from "sonner";
-import { signIn } from "next-auth/react";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { signIn } from 'next-auth/react';
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
 
-    console.log("Tentando fazer login com email:", email);
+    console.log('Tentando fazer login com email:', email);
 
     try {
-      const result = await signIn("credentials", {
+      const result = await signIn('credentials', {
         email,
         password,
         redirect: false,
-        callbackUrl: "/dashboard"
+        callbackUrl: '/dashboard',
       });
 
-      console.log("Resultado do login:", result);
+      console.log('Resultado do login:', result);
 
       if (result?.error) {
-        const errorMessage = result.error === "CredentialsSignin"
-          ? "Email ou senha incorretos"
+        const errorMessage = result.error === 'CredentialsSignin'
+          ? 'Email ou senha incorretos'
           : `Erro de login: ${result.error}`;
         
         toast.error(errorMessage);
-        console.error("Erro de login:", result.error);
+        console.error('Erro de login:', result.error);
         setIsLoading(false);
         return;
       }
 
       if (result?.ok) {
-        toast.success("Login realizado com sucesso!");
-        console.log("Login bem-sucedido, redirecionando para", result.url);
+        toast.success('Login realizado com sucesso!');
+        console.log('Login bem-sucedido, redirecionando para', result.url);
         
         // Forçar redirecionamento usando window.location
-        window.location.href = result.url || "/dashboard";
+        window.location.href = result.url || '/dashboard';
       } else {
         setIsLoading(false);
       }
     } catch (error) {
-      console.error("Exceção durante o login:", error);
-      toast.error("Ocorreu um erro ao fazer login");
+      console.error('Exceção durante o login:', error);
+      toast.error('Ocorreu um erro ao fazer login');
       setIsLoading(false);
     }
   }
@@ -80,7 +80,7 @@ export function LoginForm() {
         />
       </div>
       <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700" disabled={isLoading}>
-        {isLoading ? "Entrando..." : "Entrar"}
+        {isLoading ? 'Entrando...' : 'Entrar'}
       </Button>
     </form>
   );

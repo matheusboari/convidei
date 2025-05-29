@@ -1,15 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { GroupForm } from "@/components/dashboard/group-form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import prisma from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { Button } from '@/components/ui/button';
+import { GroupForm } from '@/components/dashboard/group-form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import prisma from '@/lib/prisma';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export default async function AddGroupPage() {
   const session = await auth();
   
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
   
   return (

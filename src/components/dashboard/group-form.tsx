@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 interface Guest {
   id: string;
@@ -29,9 +29,9 @@ export function GroupForm({ initialData, isEditing = false }: GroupFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [guests, setGuests] = useState<Guest[]>([]);
   const [formData, setFormData] = useState({
-    name: initialData?.name || "",
-    description: initialData?.description || "",
-    leaderId: initialData?.leaderId || "",
+    name: initialData?.name || '',
+    description: initialData?.description || '',
+    leaderId: initialData?.leaderId || '',
   });
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export function GroupForm({ initialData, isEditing = false }: GroupFormProps) {
         // Se estiver editando, buscar apenas os membros do grupo atual
         const endpoint = isEditing 
           ? `/api/groups/${initialData?.id}/members`
-          : "/api/guests";
+          : '/api/guests';
         
         const response = await fetch(endpoint);
         if (response.ok) {
@@ -48,8 +48,8 @@ export function GroupForm({ initialData, isEditing = false }: GroupFormProps) {
           setGuests(data);
         }
       } catch (error) {
-        console.error("Erro ao buscar convidados:", error);
-        toast.error("Erro ao carregar a lista de convidados");
+        console.error('Erro ao buscar convidados:', error);
+        toast.error('Erro ao carregar a lista de convidados');
       }
     };
 
@@ -58,9 +58,9 @@ export function GroupForm({ initialData, isEditing = false }: GroupFormProps) {
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | 
-       { name: string; value: string }
+       { name: string; value: string },
   ) => {
-    const { name, value } = "target" in e ? e.target : e;
+    const { name, value } = 'target' in e ? e.target : e;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -69,25 +69,25 @@ export function GroupForm({ initialData, isEditing = false }: GroupFormProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`/api/groups${isEditing ? `/${initialData?.id}` : ""}`, {
-        method: isEditing ? "PATCH" : "POST",
+      const response = await fetch(`/api/groups${isEditing ? `/${initialData?.id}` : ''}`, {
+        method: isEditing ? 'PATCH' : 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        throw new Error("Falha ao salvar grupo");
+        throw new Error('Falha ao salvar grupo');
       }
 
       toast.success(
-        isEditing ? "Grupo atualizado com sucesso!" : "Grupo adicionado com sucesso!"
+        isEditing ? 'Grupo atualizado com sucesso!' : 'Grupo adicionado com sucesso!',
       );
-      router.push("/dashboard/grupos");
+      router.push('/dashboard/grupos');
       router.refresh();
     } catch (error) {
-      toast.error("Ocorreu um erro ao salvar o grupo");
+      toast.error('Ocorreu um erro ao salvar o grupo');
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -125,7 +125,7 @@ export function GroupForm({ initialData, isEditing = false }: GroupFormProps) {
           <Label htmlFor="leaderId">Líder do Grupo</Label>
           <Select
             value={formData.leaderId}
-            onValueChange={(value) => handleChange({ name: "leaderId", value })}
+            onValueChange={(value) => handleChange({ name: 'leaderId', value })}
           >
             <SelectTrigger>
               <SelectValue placeholder="Selecione um líder para o grupo" />
@@ -147,10 +147,10 @@ export function GroupForm({ initialData, isEditing = false }: GroupFormProps) {
 
       <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700" disabled={isLoading}>
         {isLoading
-          ? "Salvando..."
+          ? 'Salvando...'
           : isEditing
-          ? "Atualizar Grupo"
-          : "Adicionar Grupo"}
+            ? 'Atualizar Grupo'
+            : 'Adicionar Grupo'}
       </Button>
     </form>
   );

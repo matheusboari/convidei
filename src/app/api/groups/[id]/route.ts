@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "../../../../../auth";
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { auth } from '../../../../../auth';
 
 interface Params {
   id: string;
@@ -11,9 +11,9 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
     const session = await auth();
     
     if (!session) {
-      return new NextResponse(JSON.stringify({ error: "Não autorizado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Não autorizado' }), { 
         status: 401,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -24,25 +24,25 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
       include: {
         guests: true,
         confirmation: true,
-      }
+      },
     });
 
     if (!group) {
-      return new NextResponse(JSON.stringify({ error: "Grupo não encontrado" }), {
+      return new NextResponse(JSON.stringify({ error: 'Grupo não encontrado' }), {
         status: 404,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
     return new NextResponse(JSON.stringify(group), {
       status: 200,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error("[GROUP_GET]", error);
-    return new NextResponse(JSON.stringify({ error: "Erro interno do servidor" }), {
+    console.error('[GROUP_GET]', error);
+    return new NextResponse(JSON.stringify({ error: 'Erro interno do servidor' }), {
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 }
@@ -52,9 +52,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
     const session = await auth();
     
     if (!session) {
-      return new NextResponse(JSON.stringify({ error: "Não autorizado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Não autorizado' }), { 
         status: 401,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -63,33 +63,33 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
     const { name, description, leaderId } = body;
 
     if (!name) {
-      return new NextResponse(JSON.stringify({ error: "Nome é obrigatório" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Nome é obrigatório' }), { 
         status: 400,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
     // Converter "none" para null no leaderId
-    const effectiveLeaderId = leaderId === "none" ? null : leaderId || null;
+    const effectiveLeaderId = leaderId === 'none' ? null : leaderId || null;
 
     const group = await prisma.group.update({
       where: { id },
       data: {
         name,
         description: description || null,
-        leaderId: effectiveLeaderId
+        leaderId: effectiveLeaderId,
       },
     });
 
     return new NextResponse(JSON.stringify(group), { 
       status: 200,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error("[GROUP_PATCH]", error);
-    return new NextResponse(JSON.stringify({ error: "Erro interno do servidor" }), { 
+    console.error('[GROUP_PATCH]', error);
+    return new NextResponse(JSON.stringify({ error: 'Erro interno do servidor' }), { 
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 }
@@ -99,9 +99,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Params }) {
     const session = await auth();
     
     if (!session) {
-      return new NextResponse(JSON.stringify({ error: "Não autorizado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Não autorizado' }), { 
         status: 401,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -131,10 +131,10 @@ export async function DELETE(req: NextRequest, { params }: { params: Params }) {
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
-    console.error("[GROUP_DELETE]", error);
-    return new NextResponse(JSON.stringify({ error: "Erro interno do servidor" }), { 
+    console.error('[GROUP_DELETE]', error);
+    return new NextResponse(JSON.stringify({ error: 'Erro interno do servidor' }), { 
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 } 

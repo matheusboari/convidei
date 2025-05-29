@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "../../../../../../auth";
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { auth } from '../../../../../../auth';
 
 interface Params {
   id: string;
@@ -11,9 +11,9 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     const session = await auth();
     
     if (!session) {
-      return new NextResponse(JSON.stringify({ error: "Não autorizado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Não autorizado' }), { 
         status: 401,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -45,14 +45,14 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     return new NextResponse(null, {
       status: 303,
       headers: {
-        "Location": "/dashboard/grupos",
+        'Location': '/dashboard/grupos',
       },
     });
   } catch (error) {
-    console.error("[GROUP_DELETE_POST]", error);
-    return new NextResponse(JSON.stringify({ error: "Erro interno do servidor" }), { 
+    console.error('[GROUP_DELETE_POST]', error);
+    return new NextResponse(JSON.stringify({ error: 'Erro interno do servidor' }), { 
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 } 

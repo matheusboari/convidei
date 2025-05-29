@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { User, Users, Gift, Home, CheckSquare } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { User, Users, Gift, Home, CheckSquare } from 'lucide-react';
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -14,28 +14,28 @@ export function Sidebar() {
 
   const menuItems = [
     {
-      href: "/dashboard",
-      label: "Início",
+      href: '/dashboard',
+      label: 'Início',
       icon: <Home className="mr-2 h-5 w-5" />,
     },
     {
-      href: "/dashboard/convidados",
-      label: "Convidados",
+      href: '/dashboard/convidados',
+      label: 'Convidados',
       icon: <User className="mr-2 h-5 w-5" />,
     },
     {
-      href: "/dashboard/grupos",
-      label: "Grupos",
+      href: '/dashboard/grupos',
+      label: 'Grupos',
       icon: <Users className="mr-2 h-5 w-5" />,
     },
     {
-      href: "/dashboard/confirmacoes",
-      label: "Confirmações",
+      href: '/dashboard/confirmacoes',
+      label: 'Confirmações',
       icon: <CheckSquare className="mr-2 h-5 w-5" />,
     },
     {
-      href: "/dashboard/presentes",
-      label: "Presentes",
+      href: '/dashboard/presentes',
+      label: 'Presentes',
       icon: <Gift className="mr-2 h-5 w-5" />,
     },
   ];
@@ -49,11 +49,11 @@ export function Sidebar() {
         {menuItems.map((item) => (
           <Link key={item.href} href={item.href}>
             <Button
-              variant={isActive(item.href) ? "default" : "ghost"}
+              variant={isActive(item.href) ? 'default' : 'ghost'}
               className={`w-full justify-start ${
                 isActive(item.href) 
-                  ? "bg-purple-600 text-white hover:bg-purple-700" 
-                  : "hover:bg-purple-100 hover:text-purple-700"
+                  ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                  : 'hover:bg-purple-100 hover:text-purple-700'
               }`}
             >
               {item.icon}

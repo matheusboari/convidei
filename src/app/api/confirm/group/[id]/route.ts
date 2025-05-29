@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   try {
@@ -14,16 +14,16 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         leader: {
           select: {
             id: true,
-            name: true
-          }
-        }
+            name: true,
+          },
+        },
       },
     });
 
     if (!group) {
-      return new NextResponse(JSON.stringify({ error: "Grupo não encontrado" }), {
+      return new NextResponse(JSON.stringify({ error: 'Grupo não encontrado' }), {
         status: 404,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       
       // Verificar se já existe uma confirmação para o membro
       const existingConfirmation = await prisma.confirmation.findUnique({
-        where: { guestId: member.id }
+        where: { guestId: member.id },
       });
       
       if (existingConfirmation) {
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     
     // Também atualizar a confirmação do grupo
     const groupConfirmation = await prisma.confirmation.findUnique({
-      where: { groupId: group.id }
+      where: { groupId: group.id },
     });
     
     if (groupConfirmation) {
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
           numberOfPeople: numberOfPeople || group.guests.length,
           confirmationDate: confirmDate,
           notes: notes || null,
-        }
+        },
       });
     } else {
       await prisma.confirmation.create({
@@ -84,19 +84,19 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
           numberOfPeople: numberOfPeople || group.guests.length,
           confirmationDate: confirmDate,
           notes: notes || null,
-        }
+        },
       });
     }
     
     return new NextResponse(JSON.stringify({ success: true, groupConfirmation: true }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error("[GROUP_CONFIRMATION_POST]", error);
-    return new NextResponse(JSON.stringify({ error: "Erro interno do servidor" }), {
+    console.error('[GROUP_CONFIRMATION_POST]', error);
+    return new NextResponse(JSON.stringify({ error: 'Erro interno do servidor' }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 } 

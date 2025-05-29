@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle, Check, X } from "lucide-react";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertTriangle, Check, X } from 'lucide-react';
 
 interface ConfirmationFormProps {
   guest: {
@@ -23,7 +23,7 @@ interface ConfirmationFormProps {
 export function ConfirmationForm({
   guest,
   defaultConfirmed,
-  defaultNotes = "",
+  defaultNotes = '',
 }: ConfirmationFormProps) {
   const [loading, setLoading] = useState(false);
   const [confirmed, setConfirmed] = useState(defaultConfirmed);
@@ -38,9 +38,9 @@ export function ConfirmationForm({
 
     try {
       const response = await fetch(`/api/confirm/${guest.id}`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           confirmed: willAttend,
@@ -49,7 +49,7 @@ export function ConfirmationForm({
       });
 
       if (!response.ok) {
-        throw new Error("Ocorreu um erro ao confirmar sua presença");
+        throw new Error('Ocorreu um erro ao confirmar sua presença');
       }
 
       setConfirmed(willAttend);
@@ -64,10 +64,10 @@ export function ConfirmationForm({
   if (submitted) {
     return (
       <div className="space-y-4">
-        <Alert className={confirmed ? "bg-green-50" : "bg-orange-50"}>
+        <Alert className={confirmed ? 'bg-green-50' : 'bg-orange-50'}>
           <div
             className={`p-2 rounded-full ${
-              confirmed ? "bg-green-100" : "bg-orange-100"
+              confirmed ? 'bg-green-100' : 'bg-orange-100'
             } inline-flex`}
           >
             {confirmed ? (
@@ -80,15 +80,15 @@ export function ConfirmationForm({
             {confirmed
               ? isGroupMember
                 ? `Presença confirmada para o grupo ${guest.group?.name}`
-                : "Presença confirmada!"
-              : "Ausência registrada"}
+                : 'Presença confirmada!'
+              : 'Ausência registrada'}
           </AlertTitle>
           <AlertDescription className="mt-2">
             {confirmed
               ? isGroupMember
-                ? "Sua confirmação foi registrada para todos os membros do grupo. Estamos ansiosos para receber vocês!"
-                : "Obrigado por confirmar sua presença. Estamos ansiosos para receber você!"
-              : "Agradecemos por nos informar. Sentiremos sua falta!"}
+                ? 'Sua confirmação foi registrada para todos os membros do grupo. Estamos ansiosos para receber vocês!'
+                : 'Obrigado por confirmar sua presença. Estamos ansiosos para receber você!'
+              : 'Agradecemos por nos informar. Sentiremos sua falta!'}
             {notes && (
               <div className="mt-4">
                 <p className="font-medium">Sua mensagem:</p>

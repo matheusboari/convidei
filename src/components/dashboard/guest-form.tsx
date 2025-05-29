@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface GuestFormProps {
   initialData?: {
@@ -31,25 +31,25 @@ export function GuestForm({ initialData, groups = [], isEditing = false }: Guest
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: initialData?.name || "",
-    email: initialData?.email || "",
-    phone: initialData?.phone || "",
-    groupId: initialData?.groupId || "",
-    giftSize: initialData?.giftSize || "",
-    giftQuantity: initialData?.giftQuantity?.toString() || "1",
+    name: initialData?.name || '',
+    email: initialData?.email || '',
+    phone: initialData?.phone || '',
+    groupId: initialData?.groupId || '',
+    giftSize: initialData?.giftSize || '',
+    giftQuantity: initialData?.giftQuantity?.toString() || '1',
     isChild: initialData?.isChild || false,
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement> | { name: string; value: string | boolean }
+    e: React.ChangeEvent<HTMLInputElement> | { name: string; value: string | boolean },
   ) => {
-    const { name, value } = "target" in e ? e.target : e;
+    const { name, value } = 'target' in e ? e.target : e;
     
-    if (name === "giftSize" && value === "nenhum") {
+    if (name === 'giftSize' && value === 'nenhum') {
       setFormData((prev) => ({ 
         ...prev, 
         [name]: value,
-        giftQuantity: "" 
+        giftQuantity: '', 
       }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -61,37 +61,37 @@ export function GuestForm({ initialData, groups = [], isEditing = false }: Guest
     setIsLoading(true);
 
     try {
-      const response = await fetch(`/api/guests${isEditing ? `/${initialData?.id}` : ""}`, {
-        method: isEditing ? "PATCH" : "POST",
+      const response = await fetch(`/api/guests${isEditing ? `/${initialData?.id}` : ''}`, {
+        method: isEditing ? 'PATCH' : 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...formData,
-          giftQuantity: formData.giftQuantity && formData.giftSize !== "nenhum" 
+          giftQuantity: formData.giftQuantity && formData.giftSize !== 'nenhum' 
             ? parseInt(formData.giftQuantity) 
             : null,
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Falha ao salvar convidado");
+        throw new Error('Falha ao salvar convidado');
       }
 
       toast.success(
-        isEditing ? "Convidado atualizado com sucesso!" : "Convidado adicionado com sucesso!"
+        isEditing ? 'Convidado atualizado com sucesso!' : 'Convidado adicionado com sucesso!',
       );
-      router.push("/dashboard/convidados");
+      router.push('/dashboard/convidados');
       router.refresh();
     } catch (error) {
-      toast.error("Ocorreu um erro ao salvar o convidado");
+      toast.error('Ocorreu um erro ao salvar o convidado');
       console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const giftSizes = ["P", "M", "G", "GG", "XG"];
+  const giftSizes = ['P', 'M', 'G', 'GG', 'XG'];
   
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -136,7 +136,7 @@ export function GuestForm({ initialData, groups = [], isEditing = false }: Guest
             id="isChild" 
             checked={formData.isChild}
             onCheckedChange={(checked) => 
-              handleChange({ name: "isChild", value: checked === true })
+              handleChange({ name: 'isChild', value: checked === true })
             }
           />
           <Label 
@@ -152,7 +152,7 @@ export function GuestForm({ initialData, groups = [], isEditing = false }: Guest
             <Label htmlFor="groupId">Grupo (opcional)</Label>
             <Select
               value={formData.groupId}
-              onValueChange={(value) => handleChange({ name: "groupId", value })}
+              onValueChange={(value) => handleChange({ name: 'groupId', value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione um grupo" />
@@ -173,7 +173,7 @@ export function GuestForm({ initialData, groups = [], isEditing = false }: Guest
           <Label htmlFor="giftSize">Tamanho da Fralda (opcional)</Label>
           <Select
             value={formData.giftSize}
-            onValueChange={(value) => handleChange({ name: "giftSize", value })}
+            onValueChange={(value) => handleChange({ name: 'giftSize', value })}
           >
             <SelectTrigger>
               <SelectValue placeholder="Selecione um tamanho" />
@@ -189,7 +189,7 @@ export function GuestForm({ initialData, groups = [], isEditing = false }: Guest
           </Select>
         </div>
 
-        {formData.giftSize && formData.giftSize !== "nenhum" && (
+        {formData.giftSize && formData.giftSize !== 'nenhum' && (
           <div className="space-y-2">
             <Label htmlFor="giftQuantity">Quantidade de Fraldas (opcional)</Label>
             <Input
@@ -207,10 +207,10 @@ export function GuestForm({ initialData, groups = [], isEditing = false }: Guest
 
       <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700" disabled={isLoading}>
         {isLoading
-          ? "Salvando..."
+          ? 'Salvando...'
           : isEditing
-          ? "Atualizar Convidado"
-          : "Adicionar Convidado"}
+            ? 'Atualizar Convidado'
+            : 'Adicionar Convidado'}
       </Button>
     </form>
   );

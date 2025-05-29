@@ -1,6 +1,6 @@
-import { notFound } from "next/navigation";
-import { GuestConfirmationForm } from "@/components/guest/guest-confirmation-form";
-import prisma from "@/lib/prisma";
+import { notFound } from 'next/navigation';
+import { GuestConfirmationForm } from '@/components/guest/guest-confirmation-form';
+import prisma from '@/lib/prisma';
 
 interface ConfirmPageProps {
   params: {
@@ -23,8 +23,8 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
         leadingGroups: {
           select: {
             id: true,
-            name: true
-          }
+            name: true,
+          },
         },
       },
     });
@@ -47,10 +47,10 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
           leader: {
             select: {
               id: true,
-              name: true
-            }
-          }
-        }
+              name: true,
+            },
+          },
+        },
       });
       
       // Verificar se o convidado é o líder do grupo
@@ -64,7 +64,7 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
           members: [],
           hasLeader: true,
           isLeader: false,
-          leaderName: group.leader?.name || "Líder"
+          leaderName: group.leader?.name || 'Líder',
         };
       } else {
         // Buscar outros membros do grupo
@@ -87,7 +87,7 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
           members: groupGuests,
           hasLeader: !!group?.leaderId,
           isLeader: isLeader,
-          leaderName: group?.leader?.name
+          leaderName: group?.leader?.name,
         };
       }
     }
@@ -112,7 +112,7 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
         leadingGroups.push({
           id: group.id,
           name: group.name,
-          members: members
+          members: members,
         });
       }
     }
@@ -127,8 +127,8 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
               </h1>
               <p className="text-gray-600">
                 {guest.confirmation?.confirmed 
-                  ? "Sua presença está confirmada para o chá de fraldas da Antonella! 🎉"
-                  : "Você foi convidado(a) para o chá de fraldas da Antonella"}
+                  ? 'Sua presença está confirmada para o chá de fraldas da Antonella! 🎉'
+                  : 'Você foi convidado(a) para o chá de fraldas da Antonella'}
               </p>
             </div>
 
@@ -166,7 +166,7 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
       </div>
     );
   } catch (error) {
-    console.error("Erro ao buscar informações do convidado:", error);
+    console.error('Erro ao buscar informações do convidado:', error);
     notFound();
   }
 }

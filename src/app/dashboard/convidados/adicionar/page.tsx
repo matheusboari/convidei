@@ -1,14 +1,14 @@
-import { GuestForm } from "@/components/dashboard/guest-form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import prisma from "@/lib/prisma";
-import { auth } from "../../../../../auth";
-import { redirect } from "next/navigation";
+import { GuestForm } from '@/components/dashboard/guest-form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import prisma from '@/lib/prisma';
+import { auth } from '../../../../../auth';
+import { redirect } from 'next/navigation';
 
 export default async function AddGuestPage() {
   const session = await auth();
   
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
   
   // Buscar os grupos para o dropdown
@@ -18,7 +18,7 @@ export default async function AddGuestPage() {
       name: true,
     },
     orderBy: {
-      name: "asc",
+      name: 'asc',
     },
   });
 

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,10 +9,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Upload, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/dialog';
+import { Upload, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useRouter } from 'next/navigation';
 
 export function ImportGuestsButton() {
   const [open, setOpen] = useState(false);
@@ -25,8 +25,8 @@ export function ImportGuestsButton() {
     if (!file) return;
 
     // Verificar se é um arquivo CSV
-    if (file.type !== "text/csv" && !file.name.endsWith(".csv")) {
-      setError("Por favor, selecione um arquivo CSV válido");
+    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+      setError('Por favor, selecione um arquivo CSV válido');
       return;
     }
 
@@ -35,24 +35,24 @@ export function ImportGuestsButton() {
 
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append('file', file);
 
-      const response = await fetch("/api/guests/import", {
-        method: "POST",
+      const response = await fetch('/api/guests/import', {
+        method: 'POST',
         body: formData,
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Erro ao importar convidados");
+        throw new Error(data.error || 'Erro ao importar convidados');
       }
 
       // Fechar o modal e atualizar a lista
       setOpen(false);
       router.refresh();
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Erro ao importar convidados");
+      setError(error instanceof Error ? error.message : 'Erro ao importar convidados');
     } finally {
       setIsLoading(false);
     }

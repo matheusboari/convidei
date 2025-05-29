@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { LogOut, Menu } from "lucide-react";
-import { signOut } from "next-auth/react";
-import { useState } from "react";
+} from '@/components/ui/dropdown-menu';
+import { LogOut, Menu } from 'lucide-react';
+import { signOut } from 'next-auth/react';
+import { useState } from 'react';
 
 interface HeaderProps {
   user?: {
@@ -24,12 +24,12 @@ export function Header({ user }: HeaderProps) {
 
   const userInitials = user?.name
     ? user.name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .substring(0, 2)
-    : "?";
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2)
+    : '?';
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-purple-100 bg-white px-4 md:px-6">
@@ -55,12 +55,12 @@ export function Header({ user }: HeaderProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem className="font-medium text-gray-900">
-              {user?.name || "Admin"}
+              {user?.name || 'Admin'}
             </DropdownMenuItem>
             <DropdownMenuItem className="text-sm text-gray-500">
               {user?.email}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/login" })}>
+            <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Sair</span>
             </DropdownMenuItem>

@@ -1,27 +1,27 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
-import { parse } from "csv-parse/sync";
-import crypto from "crypto";
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import prisma from '@/lib/prisma';
+import { parse } from 'csv-parse/sync';
+import crypto from 'crypto';
 
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
     
     if (!session) {
-      return new NextResponse(JSON.stringify({ error: "Não autorizado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Não autorizado' }), { 
         status: 401,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
     const formData = await req.formData();
-    const file = formData.get("file") as File;
+    const file = formData.get('file') as File;
 
     if (!file) {
-      return new NextResponse(JSON.stringify({ error: "Nenhum arquivo enviado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Nenhum arquivo enviado' }), { 
         status: 400,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -36,16 +36,16 @@ export async function POST(req: NextRequest) {
     });
 
     // Validar estrutura do CSV
-    const requiredColumns = ["nome", "email", "telefone", "grupo", "tamanho_fralda", "quantidade_fralda", "crianca", "lider_grupo"];
+    const requiredColumns = ['nome', 'email', 'telefone', 'grupo', 'tamanho_fralda', 'quantidade_fralda', 'crianca', 'lider_grupo'];
     const fileColumns = Object.keys(records[0] || {});
     
     const missingColumns = requiredColumns.filter(col => !fileColumns.includes(col));
     if (missingColumns.length > 0) {
       return new NextResponse(JSON.stringify({ 
-        error: `Colunas obrigatórias ausentes: ${missingColumns.join(", ")}` 
+        error: `Colunas obrigatórias ausentes: ${missingColumns.join(', ')}`, 
       }), { 
         status: 400,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     // Validar líderes antes de processar
     const leadersPerGroup = new Map(); // Nome do grupo -> quantidade de líderes
     for (const record of records) {
-      if (record.grupo?.trim() && record.lider_grupo?.toLowerCase() === "sim") {
+      if (record.grupo?.trim() && record.lider_grupo?.toLowerCase() === 'sim') {
         const groupName = record.grupo.trim();
         leadersPerGroup.set(groupName, (leadersPerGroup.get(groupName) || 0) + 1);
       }
@@ -71,10 +71,10 @@ export async function POST(req: NextRequest) {
 
     if (groupsWithMultipleLeaders.length > 0) {
       return new NextResponse(JSON.stringify({ 
-        error: `Os seguintes grupos têm mais de um líder definido: ${groupsWithMultipleLeaders.join(", ")}. Cada grupo deve ter apenas um líder.` 
+        error: `Os seguintes grupos têm mais de um líder definido: ${groupsWithMultipleLeaders.join(', ')}. Cada grupo deve ter apenas um líder.`, 
       }), { 
         status: 400,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
       try {
         // Validar nome (obrigatório)
         if (!record.nome?.trim()) {
-          throw new Error("Nome é obrigatório");
+          throw new Error('Nome é obrigatório');
         }
 
         // Processar grupo se especificado
@@ -94,13 +94,13 @@ export async function POST(req: NextRequest) {
           // Verificar se o grupo já existe no banco ou foi criado nesta importação
           if (!groups.has(groupName)) {
             const existingGroup = await prisma.group.findFirst({
-              where: { name: groupName }
+              where: { name: groupName },
             });
 
             if (existingGroup) {
               groups.set(groupName, { 
                 id: existingGroup.id, 
-                leaderId: existingGroup.leaderId 
+                leaderId: existingGroup.leaderId, 
               });
               groupId = existingGroup.id;
             } else {
@@ -108,12 +108,12 @@ export async function POST(req: NextRequest) {
               const newGroup = await prisma.group.create({
                 data: { 
                   name: groupName,
-                  inviteLink: groupInviteLink
-                }
+                  inviteLink: groupInviteLink,
+                },
               });
               groups.set(groupName, { 
                 id: newGroup.id, 
-                leaderId: null 
+                leaderId: null, 
               });
               groupId = newGroup.id;
             }
@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
             groupId,
             giftSize: record.tamanho_fralda?.trim() || null,
             giftQuantity: record.quantidade_fralda ? parseInt(record.quantidade_fralda) : null,
-            isChild: record.crianca?.toLowerCase() === "sim",
+            isChild: record.crianca?.toLowerCase() === 'sim',
             inviteLink,
           },
         });
@@ -142,7 +142,7 @@ export async function POST(req: NextRequest) {
         guests.push(guest);
 
         // Se for líder do grupo, registrar para atualização posterior
-        if (record.grupo?.trim() && record.lider_grupo?.toLowerCase() === "sim") {
+        if (record.grupo?.trim() && record.lider_grupo?.toLowerCase() === 'sim') {
           const groupName = record.grupo.trim();
           pendingLeaders.set(groupName, guest.id);
         }
@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
         errors.push({
           linha: index + 2,
           nome: record.nome,
-          erro: error instanceof Error ? error.message : "Erro desconhecido"
+          erro: error instanceof Error ? error.message : 'Erro desconhecido',
         });
       }
     }
@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
       if (groupInfo && !groupInfo.leaderId) {
         await prisma.group.update({
           where: { id: groupInfo.id },
-          data: { leaderId: guestId }
+          data: { leaderId: guestId },
         });
       }
     }
@@ -174,16 +174,16 @@ export async function POST(req: NextRequest) {
       erros: errors,
     }), { 
       status: 200,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
-    console.error("[GUESTS_IMPORT]", error);
+    console.error('[GUESTS_IMPORT]', error);
     return new NextResponse(JSON.stringify({ 
-      error: "Erro ao processar arquivo CSV" 
+      error: 'Erro ao processar arquivo CSV', 
     }), { 
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 } 

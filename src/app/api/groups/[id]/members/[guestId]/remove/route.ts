@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "../../../../../../../../auth";
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { auth } from '../../../../../../../../auth';
 
 interface Params {
   id: string;
@@ -12,9 +12,9 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     const session = await auth();
     
     if (!session) {
-      return new NextResponse(JSON.stringify({ error: "Não autorizado" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Não autorizado' }), { 
         status: 401,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -24,14 +24,14 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     const guest = await prisma.guest.findFirst({
       where: { 
         id: guestId,
-        groupId: id
+        groupId: id,
       },
     });
 
     if (!guest) {
-      return new NextResponse(JSON.stringify({ error: "Convidado não encontrado neste grupo" }), { 
+      return new NextResponse(JSON.stringify({ error: 'Convidado não encontrado neste grupo' }), { 
         status: 404,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
@@ -45,14 +45,14 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     return new NextResponse(null, {
       status: 303,
       headers: {
-        "Location": `/dashboard/grupos/${id}/membros`,
+        'Location': `/dashboard/grupos/${id}/membros`,
       },
     });
   } catch (error) {
-    console.error("[GROUP_MEMBER_REMOVE_POST]", error);
-    return new NextResponse(JSON.stringify({ error: "Erro interno do servidor" }), { 
+    console.error('[GROUP_MEMBER_REMOVE_POST]', error);
+    return new NextResponse(JSON.stringify({ error: 'Erro interno do servidor' }), { 
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 } 

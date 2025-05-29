@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Crown } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Guest {
   id: string;
@@ -82,22 +82,22 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
         : `/api/confirm/${guest.id}`;
         
       const response = await fetch(endpoint, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           confirmed,
           // Enviar o número total de membros + 1 para o convidado principal se for um grupo
           numberOfPeople: targetGroup ? targetGroup.members.length + 1 : undefined,
-          notes: "",
+          notes: '',
           // Incluir a lista de membros confirmados se for um grupo
           confirmedMembers: targetGroup ? selectedMembers : undefined,
         }),
       });
       
       if (!response.ok) {
-        throw new Error("Falha ao enviar confirmação");
+        throw new Error('Falha ao enviar confirmação');
       }
       
       if (confirmed) {
@@ -105,7 +105,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
         if (targetGroup) {
           toast.success(`Presença confirmada para o grupo ${targetGroup.name}!`);
         } else {
-          toast.success("Presença confirmada com sucesso!");
+          toast.success('Presença confirmada com sucesso!');
         }
         // Atualizar a página após um pequeno delay para mostrar a mensagem
         setTimeout(() => {
@@ -116,12 +116,12 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
         if (targetGroup) {
           toast.success(`Ausência registrada para o grupo ${targetGroup.name}.`);
         } else {
-          toast.success("Ausência registrada com sucesso!");
+          toast.success('Ausência registrada com sucesso!');
         }
       }
     } catch (error) {
-      toast.error("Ocorreu um erro ao processar sua confirmação");
-      console.error("Erro:", error);
+      toast.error('Ocorreu um erro ao processar sua confirmação');
+      console.error('Erro:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -143,7 +143,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
         <Alert className="bg-green-50 border-green-200">
           <AlertDescription className="text-green-700">
             {activeGroupId && activeGroupId !== guest.id 
-              ? `Sua presença foi confirmada para o grupo! Os membros selecionados foram confirmados.`
+              ? 'Sua presença foi confirmada para o grupo! Os membros selecionados foram confirmados.'
               : 'Sua presença foi confirmada com sucesso!'
             }
           </AlertDescription>
@@ -164,9 +164,9 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
         </div>
         <p className="text-gray-600 mb-4">
           {isConfirmed 
-            ? "Sua presença já está confirmada pelo líder do grupo!"
+            ? 'Sua presença já está confirmada pelo líder do grupo!'
             : isAbsent
-              ? "O grupo recusou o convite."
+              ? 'O grupo recusou o convite.'
               : `${groupInfo.leaderName} é o líder do grupo e será responsável por confirmar a presença de todos.`}
         </p>
         {!isConfirmed && !isAbsent && (
@@ -194,7 +194,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
           onClick={() => handleConfirm(true)}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Enviando..." : "Mudei de ideia, vou comparecer"}
+          {isSubmitting ? 'Enviando...' : 'Mudei de ideia, vou comparecer'}
         </Button>
       </div>
     );
@@ -228,7 +228,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
                   onClick={() => handleConfirm(true, group.id)}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Enviando..." : "Mudei de ideia, vamos comparecer"}
+                  {isSubmitting ? 'Enviando...' : 'Mudei de ideia, vamos comparecer'}
                 </Button>
               </>
             ) : (
@@ -273,7 +273,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
                     onClick={() => handleConfirm(true, group.id)}
                     disabled={isSubmitting || selectedMembers.length === 0}
                   >
-                    {isSubmitting ? "Enviando..." : `Confirmar presença do grupo ${group.name}`}
+                    {isSubmitting ? 'Enviando...' : `Confirmar presença do grupo ${group.name}`}
                   </Button>
                   
                   <Button 
@@ -282,7 +282,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
                     onClick={() => handleConfirm(false, group.id)}
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Enviando..." : "Não poderemos comparecer"}
+                    {isSubmitting ? 'Enviando...' : 'Não poderemos comparecer'}
                   </Button>
                 </div>
               </>
@@ -319,7 +319,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
                         onClick={() => handleConfirm(true, group.id)}
                         disabled={isSubmitting}
                       >
-                        {isSubmitting ? "Enviando..." : "Mudei de ideia, vamos comparecer"}
+                        {isSubmitting ? 'Enviando...' : 'Mudei de ideia, vamos comparecer'}
                       </Button>
                     </>
                   ) : (
@@ -364,7 +364,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
                           onClick={() => handleConfirm(true, group.id)}
                           disabled={isSubmitting || selectedMembers.length === 0}
                         >
-                          {isSubmitting ? "Enviando..." : `Confirmar presença do grupo ${group.name}`}
+                          {isSubmitting ? 'Enviando...' : `Confirmar presença do grupo ${group.name}`}
                         </Button>
                         
                         <Button 
@@ -373,7 +373,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
                           onClick={() => handleConfirm(false, group.id)}
                           disabled={isSubmitting}
                         >
-                          {isSubmitting ? "Enviando..." : "Não poderemos comparecer"}
+                          {isSubmitting ? 'Enviando...' : 'Não poderemos comparecer'}
                         </Button>
                       </div>
                     </>
@@ -400,7 +400,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
           disabled={isSubmitting}
           onClick={() => handleConfirm(false)}
         >
-          {isSubmitting ? "Enviando..." : "Cancelar minha presença"}
+          {isSubmitting ? 'Enviando...' : 'Cancelar minha presença'}
         </Button>
       </div>
     );
@@ -414,7 +414,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
           onClick={() => handleConfirm(true)}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Enviando..." : "Confirmar presença"}
+          {isSubmitting ? 'Enviando...' : 'Confirmar presença'}
         </Button>
         
         <Button 
@@ -423,7 +423,7 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
           onClick={() => handleConfirm(false)}
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Enviando..." : "Não poderei comparecer"}
+          {isSubmitting ? 'Enviando...' : 'Não poderei comparecer'}
         </Button>
       </div>
     </div>

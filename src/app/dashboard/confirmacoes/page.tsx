@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -13,14 +13,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { X, Calendar, Users, Crown } from "lucide-react";
-import Link from "next/link";
-import prisma from "@/lib/prisma";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import React from "react";
-import { ContactButton } from "@/components/dashboard/contact-button";
+} from '@/components/ui/table';
+import { X, Calendar, Users, Crown } from 'lucide-react';
+import Link from 'next/link';
+import prisma from '@/lib/prisma';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import React from 'react';
+import { ContactButton } from '@/components/dashboard/contact-button';
 
 export default async function ConfirmationsPage() {
   // Buscar todos os convidados e suas confirmações
@@ -45,14 +45,14 @@ export default async function ConfirmationsPage() {
           leader: {
             select: {
               id: true,
-            }
-          }
+            },
+          },
         },
       },
     },
     orderBy: [
-      { confirmed: "desc" },
-      { confirmationDate: "desc" },
+      { confirmed: 'desc' },
+      { confirmationDate: 'desc' },
     ],
   });
 
@@ -67,13 +67,13 @@ export default async function ConfirmationsPage() {
           leader: {
             select: {
               id: true,
-            }
-          }
-        }
+            },
+          },
+        },
       },
     },
     orderBy: {
-      name: "asc",
+      name: 'asc',
     },
   });
 
@@ -83,7 +83,7 @@ export default async function ConfirmationsPage() {
 
   // Formatar data relativa
   const formatDate = (date: Date | null) => {
-    if (!date) return "N/A";
+    if (!date) return 'N/A';
     return formatDistanceToNow(date, { addSuffix: true, locale: ptBR });
   };
 
@@ -196,7 +196,7 @@ export default async function ConfirmationsPage() {
                           </span>
                         </TableCell>
                         <TableCell className="max-w-xs truncate">
-                          {confirmation.notes || "-"}
+                          {confirmation.notes || '-'}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -222,7 +222,7 @@ export default async function ConfirmationsPage() {
                           </span>
                         </TableCell>
                         <TableCell className="max-w-xs truncate">
-                          {confirmation.notes || "-"}
+                          {confirmation.notes || '-'}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -270,7 +270,7 @@ export default async function ConfirmationsPage() {
                       const leaderContact = leader ? {
                         name: leader.name,
                         phone: leader.phone || null,
-                        inviteLink: leader.inviteLink || ''
+                        inviteLink: leader.inviteLink || '',
                       } : { name: groupName, phone: null, inviteLink: '' };
                       return (
                         <TableRow key={confirmation.id} className="opacity-70 bg-red-50">
@@ -341,7 +341,7 @@ export default async function ConfirmationsPage() {
                                 guest={{
                                   name: confirmation.guest.name,
                                   phone: confirmation.guest.phone || null,
-                                  inviteLink: confirmation.guest.inviteLink || ''
+                                  inviteLink: confirmation.guest.inviteLink || '',
                                 }}
                                 isDisabled={!confirmation.guest.phone}
                               />
@@ -362,16 +362,16 @@ export default async function ConfirmationsPage() {
                   {/* Agrupar convidados sem resposta por grupo */}
                   {Object.entries(
                     guestsWithoutConfirmation.reduce((acc, guest) => {
-                      const groupName = guest.group?.name || "Sem Grupo";
+                      const groupName = guest.group?.name || 'Sem Grupo';
                       if (!acc[groupName]) {
                         acc[groupName] = [];
                       }
                       acc[groupName].push(guest);
                       return acc;
-                    }, {} as Record<string, typeof guestsWithoutConfirmation>)
+                    }, {} as Record<string, typeof guestsWithoutConfirmation>),
                   ).map(([groupName, guests]) => (
                     <React.Fragment key={groupName}>
-                      {groupName !== "Sem Grupo" ? (
+                      {groupName !== 'Sem Grupo' ? (
                         <TableRow className="bg-gray-50/50">
                           <TableCell className="font-medium align-top">
                             <div className="flex items-center">

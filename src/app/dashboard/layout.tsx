@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { Sidebar } from "@/components/dashboard/sidebar";
-import { Header } from "@/components/dashboard/header";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { Sidebar } from '@/components/dashboard/sidebar';
+import { Header } from '@/components/dashboard/header';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 export default function DashboardLayout({
   children,
@@ -20,16 +20,16 @@ export default function DashboardLayout({
   }, []);
 
   useEffect(() => {
-    if (isMounted && status === "unauthenticated") {
-      router.push("/login");
+    if (isMounted && status === 'unauthenticated') {
+      router.push('/login');
     }
   }, [isMounted, router, status]);
 
-  if (!isMounted || status === "loading") {
+  if (!isMounted || status === 'loading') {
     return <div className="flex h-screen items-center justify-center">Carregando...</div>;
   }
 
-  if (status === "unauthenticated") {
+  if (status === 'unauthenticated') {
     return null;
   }
 

@@ -1,8 +1,8 @@
-import { GroupForm } from "@/components/dashboard/group-form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import prisma from "@/lib/prisma";
-import { auth } from "../../../../../auth";
-import { redirect, notFound } from "next/navigation";
+import { GroupForm } from '@/components/dashboard/group-form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import prisma from '@/lib/prisma';
+import { auth } from '../../../../../auth';
+import { redirect, notFound } from 'next/navigation';
 
 interface EditGroupPageProps {
   params: {
@@ -14,7 +14,7 @@ export default async function EditGroupPage({ params }: EditGroupPageProps) {
   const session = await auth();
   
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
   
   const group = await prisma.group.findUnique({
@@ -26,7 +26,7 @@ export default async function EditGroupPage({ params }: EditGroupPageProps) {
       name: true,
       description: true,
       leaderId: true,
-    }
+    },
   });
 
   if (!group) {
@@ -53,8 +53,8 @@ export default async function EditGroupPage({ params }: EditGroupPageProps) {
             initialData={{
               id: group.id,
               name: group.name,
-              description: group.description || "",
-              leaderId: group.leaderId || "",
+              description: group.description || '',
+              leaderId: group.leaderId || '',
             }}
             isEditing
           />

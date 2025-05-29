@@ -4,7 +4,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -12,24 +12,24 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import prisma from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { Gift, Users, CheckCircle, XCircle } from "lucide-react";
-import { ProgressCircle } from "@/components/ui/progress-circle";
+} from '@/components/ui/table';
+import prisma from '@/lib/prisma';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { Gift, Users, CheckCircle, XCircle } from 'lucide-react';
+import { ProgressCircle } from '@/components/ui/progress-circle';
 
 // Preço médio por pacote de fraldas
 const PRECO_PACOTE_FRALDA = 50;
 
 // Tamanhos de fraldas disponíveis
-const TAMANHOS_FRALDA = ["P", "M", "G", "XG", "XXG"];
+const TAMANHOS_FRALDA = ['P', 'M', 'G', 'XG', 'XXG'];
 
 export default async function PresentesPage() {
   const session = await auth();
   
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
 
   // Buscar todos os convidados com seus tamanhos de fralda e status de confirmação
@@ -63,7 +63,7 @@ export default async function PresentesPage() {
   // Calcular totais
   convidados.forEach(convidado => {
     // Só contabilizar se tiver tamanho de fralda especificado
-    if (convidado.giftSize && convidado.giftSize !== "nenhum") {
+    if (convidado.giftSize && convidado.giftSize !== 'nenhum') {
       const tamanho = convidado.giftSize;
       const quantidade = convidado.giftQuantity || 1;
       const confirmado = convidado.confirmation?.confirmed || false;

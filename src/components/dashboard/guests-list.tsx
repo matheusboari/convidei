@@ -1,7 +1,7 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -9,15 +9,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Pencil, Link as LinkIcon, Check, X, Baby, Crown, ChevronDown, ChevronRight } from "lucide-react";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { DeleteGuestButton } from "@/components/dashboard/delete-guest-button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Users } from "lucide-react";
+} from '@/components/ui/table';
+import { Pencil, Link as LinkIcon, Check, X, Baby, Crown, ChevronDown, ChevronRight , Users } from 'lucide-react';
+import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { DeleteGuestButton } from '@/components/dashboard/delete-guest-button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface Guest {
   id: string;
@@ -55,20 +54,20 @@ export function GuestsList({ guests }: GuestsListProps) {
   // Agrupar convidados por grupo
   const groupedGuests = groupByGroup
     ? guestsWithGroup.reduce((acc, guest) => {
-        const groupName = guest.group?.name || "Individual";
-        if (!acc[groupName]) {
-          acc[groupName] = [];
-        }
-        acc[groupName].push(guest);
-        return acc;
-      }, {} as Record<string, Guest[]>)
-    : { "Todos os Convidados": guests };
+      const groupName = guest.group?.name || 'Individual';
+      if (!acc[groupName]) {
+        acc[groupName] = [];
+      }
+      acc[groupName].push(guest);
+      return acc;
+    }, {} as Record<string, Guest[]>)
+    : { 'Todos os Convidados': guests };
 
   // Função para alternar o estado de colapso de um grupo
   const toggleGroupCollapse = (groupName: string) => {
     setCollapsedGroups(prev => ({
       ...prev,
-      [groupName]: !prev[groupName]
+      [groupName]: !prev[groupName],
     }));
   };
 
@@ -108,7 +107,7 @@ export function GuestsList({ guests }: GuestsListProps) {
                     Convidados Individuais
                   </h3>
                   <Badge className="ml-2 bg-purple-100 text-purple-800">
-                    {guestsWithoutGroup.length} {guestsWithoutGroup.length === 1 ? "convidado" : "convidados"}
+                    {guestsWithoutGroup.length} {guestsWithoutGroup.length === 1 ? 'convidado' : 'convidados'}
                   </Badge>
                 </div>
                 
@@ -224,7 +223,7 @@ export function GuestsList({ guests }: GuestsListProps) {
                     {groupName}
                   </h3>
                   <Badge className="ml-2 bg-purple-100 text-purple-800">
-                    {groupGuests.length} {groupGuests.length === 1 ? "convidado" : "convidados"}
+                    {groupGuests.length} {groupGuests.length === 1 ? 'convidado' : 'convidados'}
                   </Badge>
                 </div>
                 
@@ -327,9 +326,9 @@ export function GuestsList({ guests }: GuestsListProps) {
                                   </TooltipTrigger>
                                   <TooltipContent>
                                     {guest.group?.leader?.id === guest.id ? (
-                                      "Link de confirmação do grupo"
+                                      'Link de confirmação do grupo'
                                     ) : (
-                                      "Apenas o líder do grupo pode confirmar a presença"
+                                      'Apenas o líder do grupo pode confirmar a presença'
                                     )}
                                   </TooltipContent>
                                 </Tooltip>
@@ -457,11 +456,11 @@ export function GuestsList({ guests }: GuestsListProps) {
                           </TooltipTrigger>
                           <TooltipContent>
                             {!guest.group ? (
-                              "Link de confirmação individual"
+                              'Link de confirmação individual'
                             ) : guest.group.leader?.id === guest.id ? (
-                              "Link de confirmação do grupo"
+                              'Link de confirmação do grupo'
                             ) : (
-                              "Apenas o líder do grupo pode confirmar a presença"
+                              'Apenas o líder do grupo pode confirmar a presença'
                             )}
                           </TooltipContent>
                         </Tooltip>

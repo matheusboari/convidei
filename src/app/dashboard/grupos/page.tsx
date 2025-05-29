@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -13,16 +13,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Users, Pencil, Link as LinkIcon, UserPlus, Crown, AlertTriangle } from "lucide-react";
-import Link from "next/link";
-import prisma from "@/lib/prisma";
-import { auth } from "../../../../auth";
-import { redirect } from "next/navigation";
-import { DeleteGroupButton } from "@/components/dashboard/delete-group-button";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+} from '@/components/ui/table';
+import { Users, Pencil, Link as LinkIcon, UserPlus, Crown, AlertTriangle } from 'lucide-react';
+import Link from 'next/link';
+import prisma from '@/lib/prisma';
+import { auth } from '../../../../auth';
+import { redirect } from 'next/navigation';
+import { DeleteGroupButton } from '@/components/dashboard/delete-group-button';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface GroupWithRelations {
   id: string;
@@ -51,7 +51,7 @@ export default async function GroupsPage() {
   const session = await auth();
   
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const userId = session.user.id;
@@ -64,7 +64,7 @@ export default async function GroupsPage() {
           name: true,
           email: true,
           inviteLink: true,
-        }
+        },
       },
       guests: {
         select: {
@@ -75,7 +75,7 @@ export default async function GroupsPage() {
         select: {
           id: true,
           confirmed: true,
-        }
+        },
       },
       _count: {
         select: {
@@ -213,8 +213,8 @@ export default async function GroupsPage() {
                             </TooltipTrigger>
                             <TooltipContent>
                               {group.leader
-                                ? "Link de confirmação do grupo"
-                                : "Defina um líder para obter o link de confirmação"}
+                                ? 'Link de confirmação do grupo'
+                                : 'Defina um líder para obter o link de confirmação'}
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>

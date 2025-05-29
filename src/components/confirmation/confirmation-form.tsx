@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
-import { toast } from "sonner";
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface ConfirmationFormProps {
   id: string;
@@ -26,21 +26,21 @@ export function ConfirmationForm({
   const [loading, setLoading] = useState(false);
   const [confirmed, setConfirmed] = useState(isConfirmed);
   const [numberOfPeople, setNumberOfPeople] = useState<string>(
-    isGroup && groupSize ? groupSize.toString() : "1"
+    isGroup && groupSize ? groupSize.toString() : '1',
   );
   const [notifyEmail, setNotifyEmail] = useState(false);
-  const [email, setEmail] = useState("");
-  const [notes, setNotes] = useState("");
+  const [email, setEmail] = useState('');
+  const [notes, setNotes] = useState('');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await fetch("/api/confirm", {
-        method: "POST",
+      const response = await fetch('/api/confirm', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           id,
@@ -55,13 +55,13 @@ export function ConfirmationForm({
       });
 
       if (!response.ok) {
-        throw new Error("Erro ao confirmar presença");
+        throw new Error('Erro ao confirmar presença');
       }
 
       setConfirmed(confirmed);
-      toast.success(confirmed ? "Presença confirmada com sucesso!" : "Ausência registrada com sucesso!");
+      toast.success(confirmed ? 'Presença confirmada com sucesso!' : 'Ausência registrada com sucesso!');
     } catch (error) {
-      toast.error("Erro ao confirmar presença. Tente novamente.");
+      toast.error('Erro ao confirmar presença. Tente novamente.');
       console.error(error);
     } finally {
       setLoading(false);
@@ -100,7 +100,7 @@ export function ConfirmationForm({
             <SelectContent>
               {Array.from({ length: groupSize || 10 }).map((_, i) => (
                 <SelectItem key={i + 1} value={(i + 1).toString()}>
-                  {i + 1} {i === 0 ? "pessoa" : "pessoas"}
+                  {i + 1} {i === 0 ? 'pessoa' : 'pessoas'}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -150,7 +150,7 @@ export function ConfirmationForm({
         className="w-full bg-purple-600 hover:bg-purple-700" 
         disabled={loading}
       >
-        {loading ? "Confirmando..." : "Confirmar Presença"}
+        {loading ? 'Confirmando...' : 'Confirmar Presença'}
       </Button>
     </form>
   );

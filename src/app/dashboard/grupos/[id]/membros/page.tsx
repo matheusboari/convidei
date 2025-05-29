@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -13,13 +13,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Trash, User, UserPlus } from "lucide-react";
-import Link from "next/link";
-import prisma from "@/lib/prisma";
-import { auth } from "../../../../../../auth";
-import { redirect, notFound } from "next/navigation";
-import { GroupMembersForm } from "@/components/dashboard/group-members-form";
+} from '@/components/ui/table';
+import { Trash, User, UserPlus } from 'lucide-react';
+import Link from 'next/link';
+import prisma from '@/lib/prisma';
+import { auth } from '../../../../../../auth';
+import { redirect, notFound } from 'next/navigation';
+import { GroupMembersForm } from '@/components/dashboard/group-members-form';
 
 interface GroupMembersPageProps {
   params: {
@@ -31,7 +31,7 @@ export default async function GroupMembersPage({ params }: GroupMembersPageProps
   const session = await auth();
   
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
   
   const group = await prisma.group.findUnique({
@@ -53,7 +53,7 @@ export default async function GroupMembersPage({ params }: GroupMembersPageProps
       groupId: null,
     },
     orderBy: {
-      name: "asc",
+      name: 'asc',
     },
   });
 
@@ -93,7 +93,7 @@ export default async function GroupMembersPage({ params }: GroupMembersPageProps
                         <TableRow key={guest.id}>
                           <TableCell className="font-medium">{guest.name}</TableCell>
                           <TableCell>
-                            {guest.email || guest.phone || "-"}
+                            {guest.email || guest.phone || '-'}
                           </TableCell>
                           <TableCell>
                             <form action={`/api/groups/${group.id}/members/${guest.id}/remove`} method="POST">

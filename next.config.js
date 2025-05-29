@@ -6,6 +6,6 @@ const nextConfig = {
       allowedOrigins: ['localhost:3000', '*.vercel.app'],
     },
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
