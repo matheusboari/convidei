@@ -49,8 +49,9 @@ interface GroupWithRelations {
 
 export default async function GroupsPage() {
   const session = await auth();
-  if (!session?.user?.id) {
-    redirect('/login');
+  
+  if (!session) {
+    redirect("/login");
   }
 
   const userId = session.user.id;

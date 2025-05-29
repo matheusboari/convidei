@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { parse } from "csv-parse/sync";
+import crypto from "crypto";
 
 export async function POST(req: NextRequest) {
   try {
@@ -122,7 +123,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Gerar link de convite único
-        const inviteLink = `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`;
+        const inviteLink = crypto.randomUUID();
 
         // Criar convidado
         const guest = await prisma.guest.create({

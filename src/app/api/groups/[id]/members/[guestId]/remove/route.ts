@@ -36,11 +36,9 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
     }
 
     // Atualizar o convidado para remover do grupo
-    const updatedGuest = await prisma.guest.update({
+    await prisma.guest.update({
       where: { id: guestId },
-      data: {
-        groupId: null,
-      },
+      data: { groupId: null },
     });
 
     // Redirecionar de volta para a página de membros do grupo

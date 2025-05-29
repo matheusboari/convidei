@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { auth } from "../../../../auth";
+import { auth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
     const session = await auth();
     
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const body = await req.json();
+    const body = await request.json();
     const { name, description, leaderId } = body;
 
     if (!name) {

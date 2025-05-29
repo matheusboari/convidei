@@ -17,12 +17,10 @@ import { GuestsList } from "@/components/dashboard/guests-list";
 export default async function GuestsPage() {
   const session = await auth();
   
-  if (!session?.user?.id) {
+  if (!session) {
     redirect("/login");
   }
 
-  const userId = session.user.id;
-  
   const guests = await prisma.guest.findMany({
     include: {
       group: {

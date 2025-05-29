@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { auth } from "../../../../../../auth";
-import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 
 interface Params {
   id: string;
