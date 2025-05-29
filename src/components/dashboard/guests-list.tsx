@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -51,17 +51,19 @@ export function GuestsList({ guests }: GuestsListProps) {
   const guestsWithGroup = guests.filter(guest => guest.group);
   const guestsWithoutGroup = guests.filter(guest => !guest.group);
 
-  // Agrupar convidados por grupo
-  const groupedGuests = groupByGroup
-    ? guestsWithGroup.reduce((acc, guest) => {
-      const groupName = guest.group?.name || 'Individual';
-      if (!acc[groupName]) {
-        acc[groupName] = [];
-      }
-      acc[groupName].push(guest);
-      return acc;
-    }, {} as Record<string, Guest[]>)
-    : { 'Todos os Convidados': guests };
+  // Agrupar convidados por grupo usando useMemo
+  const groupedGuests = useMemo(() => {
+    return groupByGroup
+      ? guestsWithGroup.reduce((acc, guest) => {
+        const groupName = guest.group?.name || 'Individual';
+        if (!acc[groupName]) {
+          acc[groupName] = [];
+        }
+        acc[groupName].push(guest);
+        return acc;
+      }, {} as Record<string, Guest[]>)
+      : { 'Todos os Convidados': guests };
+  }, [groupByGroup, guestsWithGroup, guests]);
 
   // Função para alternar o estado de colapso de um grupo
   const toggleGroupCollapse = (groupName: string) => {
@@ -80,7 +82,7 @@ export function GuestsList({ guests }: GuestsListProps) {
       });
       setCollapsedGroups(initialCollapsedState);
     }
-  }, [groupByGroup]);
+  }, [groupByGroup, groupedGuests]);
 
   return (
     <div className="space-y-4">

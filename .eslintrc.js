@@ -11,13 +11,7 @@ module.exports = {
     'react-refresh',
   ],
   rules: {
-    'react-refresh/only-export-components': [
-      'warn',
-      {
-        allowConstantExport: true,
-        allowExportNames: ['useSession', 'useSidebar'],
-      },
-    ],
+    'react-refresh/only-export-components': 'off',
     'import/extensions': 'off',
     'eol-last': ['error', 'always'],
     indent: ['error', 2],
@@ -27,4 +21,4 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'warn',
   },
   ignorePatterns: ['dist', 'eslint.config.js'],
-}; 
+};
