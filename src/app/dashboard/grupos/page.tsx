@@ -50,7 +50,7 @@ interface GroupWithRelations {
 export default async function GroupsPage() {
   const session = await auth();
   
-  if (!session) {
+  if (!session || !session.user) {
     redirect('/login');
   }
 

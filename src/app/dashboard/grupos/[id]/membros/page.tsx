@@ -22,9 +22,9 @@ import { redirect, notFound } from 'next/navigation';
 import { GroupMembersForm } from '@/components/dashboard/group-members-form';
 
 interface GroupMembersPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function GroupMembersPage({ params }: GroupMembersPageProps) {
@@ -34,9 +34,11 @@ export default async function GroupMembersPage({ params }: GroupMembersPageProps
     redirect('/login');
   }
   
+  const { id } = await params;
+  
   const group = await prisma.group.findUnique({
     where: {
-      id: params.id,
+      id,
     },
     include: {
       guests: true,

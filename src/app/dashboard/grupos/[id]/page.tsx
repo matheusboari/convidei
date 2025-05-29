@@ -5,9 +5,9 @@ import { auth } from '../../../../../auth';
 import { redirect, notFound } from 'next/navigation';
 
 interface EditGroupPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function EditGroupPage({ params }: EditGroupPageProps) {
@@ -17,9 +17,11 @@ export default async function EditGroupPage({ params }: EditGroupPageProps) {
     redirect('/login');
   }
   
+  const { id } = await params;
+  
   const group = await prisma.group.findUnique({
     where: {
-      id: params.id,
+      id,
     },
     select: {
       id: true,

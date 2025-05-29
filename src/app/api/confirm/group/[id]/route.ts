@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = await params.id;
+    const { id } = await params;
     const { confirmed, numberOfPeople, notes, confirmedMembers } = await req.json();
 
     // Verificar se o grupo existe

@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '../../../../../../auth';
 
-interface Params {
-  id: string;
-}
-
-export async function POST(req: NextRequest, { params }: { params: Params }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     
@@ -17,7 +13,7 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
       });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const { guestId } = await req.json();
 
     if (!guestId) {
@@ -72,7 +68,7 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
   }
 }
 
-export async function GET(req: NextRequest, { params }: { params: Params }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     
@@ -83,7 +79,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
       });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     const group = await prisma.group.findUnique({
       where: { id },

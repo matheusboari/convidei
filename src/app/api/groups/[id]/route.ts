@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '../../../../../auth';
 
-interface Params {
-  id: string;
-}
-
-export async function GET(req: NextRequest, { params }: { params: Params }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     
@@ -17,7 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
       });
     }
 
-    const { id } = params;
+    const { id } = await params;
     
     const group = await prisma.group.findUnique({
       where: { id },
@@ -47,7 +43,7 @@ export async function GET(req: NextRequest, { params }: { params: Params }) {
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: Params }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     
@@ -58,7 +54,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
       });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
     const { name, description, leaderId } = body;
 
@@ -94,7 +90,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Params }) {
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Params }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     
@@ -105,7 +101,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Params }) {
       });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Primeiro, excluir a confirmação relacionada, se existir
     await prisma.confirmation.deleteMany({

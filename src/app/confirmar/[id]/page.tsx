@@ -3,14 +3,14 @@ import { GuestConfirmationForm } from '@/components/guest/guest-confirmation-for
 import prisma from '@/lib/prisma';
 
 interface ConfirmPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function ConfirmPage({ params }: ConfirmPageProps) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     // Buscar o convidado pelo link de convite
     const guest = await prisma.guest.findUnique({

@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 
-interface Params {
-  id: string;
-}
-
-export async function POST(req: NextRequest, { params }: { params: Params }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth();
     
@@ -17,7 +13,7 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
       });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Excluir confirmação relacionada se existir
     await prisma.confirmation.deleteMany({

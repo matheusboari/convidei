@@ -2,12 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '../../../../../../../../auth';
 
-interface Params {
-  id: string;
-  guestId: string;
-}
-
-export async function POST(req: NextRequest, { params }: { params: Params }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string; guestId: string }> }) {
   try {
     const session = await auth();
     
@@ -18,7 +13,7 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
       });
     }
 
-    const { id, guestId } = params;
+    const { id, guestId } = await params;
 
     // Verificar se o convidado existe e pertence ao grupo
     const guest = await prisma.guest.findFirst({

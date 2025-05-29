@@ -5,9 +5,9 @@ import { auth } from '../../../../../auth';
 import { redirect, notFound } from 'next/navigation';
 
 interface EditGuestPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function EditGuestPage({ params }: EditGuestPageProps) {
@@ -17,9 +17,11 @@ export default async function EditGuestPage({ params }: EditGuestPageProps) {
     redirect('/login');
   }
   
+  const { id } = await params;
+  
   const guest = await prisma.guest.findUnique({
     where: {
-      id: params.id,
+      id,
     },
   });
 
