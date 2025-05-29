@@ -17,7 +17,6 @@ import prisma from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Gift, Users, CheckCircle, XCircle } from "lucide-react";
-import { Pagination } from "@/components/ui/pagination";
 import { ProgressCircle } from "@/components/ui/progress-circle";
 
 // Preço médio por pacote de fraldas
@@ -45,9 +44,10 @@ export default async function PresentesPage() {
     total: {
       confirmadas: 0,
       pendentes: 0,
+      recusadas: 0,
       total: 0,
     },
-    porTamanho: {} as Record<string, { confirmadas: number; pendentes: number; total: number }>,
+    porTamanho: {} as Record<string, { confirmadas: number; pendentes: number; recusadas: number; total: number }>,
   };
 
   // Inicializar contadores por tamanho
@@ -55,6 +55,7 @@ export default async function PresentesPage() {
     resumoFraldas.porTamanho[tamanho] = {
       confirmadas: 0,
       pendentes: 0,
+      recusadas: 0,
       total: 0,
     };
   });
@@ -66,12 +67,14 @@ export default async function PresentesPage() {
       const tamanho = convidado.giftSize;
       const quantidade = convidado.giftQuantity || 1;
       const confirmado = convidado.confirmation?.confirmed || false;
+      const recusado = convidado.confirmation?.confirmed === false;
 
       // Inicializar o tamanho se não existir
       if (!resumoFraldas.porTamanho[tamanho]) {
         resumoFraldas.porTamanho[tamanho] = {
           confirmadas: 0,
           pendentes: 0,
+          recusadas: 0,
           total: 0,
         };
       }
@@ -79,21 +82,25 @@ export default async function PresentesPage() {
       if (confirmado) {
         resumoFraldas.porTamanho[tamanho].confirmadas += quantidade;
         resumoFraldas.total.confirmadas += quantidade;
+        resumoFraldas.porTamanho[tamanho].total += quantidade;
+        resumoFraldas.total.total += quantidade;
+      } else if (recusado) {
+        resumoFraldas.porTamanho[tamanho].recusadas += quantidade;
+        resumoFraldas.total.recusadas += quantidade;
       } else {
         resumoFraldas.porTamanho[tamanho].pendentes += quantidade;
         resumoFraldas.total.pendentes += quantidade;
+        resumoFraldas.porTamanho[tamanho].total += quantidade;
+        resumoFraldas.total.total += quantidade;
       }
-      
-      resumoFraldas.porTamanho[tamanho].total += quantidade;
-      resumoFraldas.total.total += quantidade;
     }
   });
 
-  // Calcular valor total estimado
-  const valorTotalEstimado = resumoFraldas.total.total * PRECO_PACOTE_FRALDA;
+  // Calcular valor total estimado (excluindo recusados)
+  const valorTotalEstimado = (resumoFraldas.total.total - resumoFraldas.total.recusadas) * PRECO_PACOTE_FRALDA;
   const valorConfirmado = resumoFraldas.total.confirmadas * PRECO_PACOTE_FRALDA;
-  const percentualConfirmado = resumoFraldas.total.total > 0 
-    ? Math.round((resumoFraldas.total.confirmadas / resumoFraldas.total.total) * 100) 
+  const percentualConfirmado = (resumoFraldas.total.total - resumoFraldas.total.recusadas) > 0 
+    ? Math.round((resumoFraldas.total.confirmadas / (resumoFraldas.total.total - resumoFraldas.total.recusadas)) * 100) 
     : 0;
 
   return (
@@ -110,13 +117,13 @@ export default async function PresentesPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xl">Total de Fraldas</CardTitle>
+            <CardTitle className="text-xl">Total de Fraldas Previstas</CardTitle>
             <Gift className="h-5 w-5 text-purple-600" />
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{resumoFraldas.total.total}</div>
             <p className="text-sm text-gray-500">
-              Fraldas serão presenteadas pelos convidados
+              Fraldas serão previstas pelos convidados
             </p>
           </CardContent>
         </Card>
@@ -161,6 +168,11 @@ export default async function PresentesPage() {
               <span className="text-2xl font-bold text-orange-500">{resumoFraldas.total.pendentes}</span>
               <span className="text-xs text-gray-500">Pendentes</span>
             </div>
+
+            <div className="flex flex-col items-center">
+              <span className="text-2xl font-bold text-red-500">{resumoFraldas.total.recusadas}</span>
+              <span className="text-xs text-gray-500">Recusadas</span>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -179,13 +191,14 @@ export default async function PresentesPage() {
                 <TableHead>Tamanho</TableHead>
                 <TableHead className="text-center">Confirmadas</TableHead>
                 <TableHead className="text-center">Pendentes</TableHead>
+                <TableHead className="text-center">Recusadas</TableHead>
                 <TableHead className="text-center">Total</TableHead>
                 <TableHead className="text-right">Valor Estimado</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {Object.entries(resumoFraldas.porTamanho)
-                .filter(([_, { total }]) => total > 0)
+                .filter(([, { total }]) => total > 0)
                 .sort(([a], [b]) => {
                   // Ordenar os tamanhos padrão em ordem específica
                   const index1 = TAMANHOS_FRALDA.indexOf(a);
@@ -196,7 +209,7 @@ export default async function PresentesPage() {
                   if (index2 >= 0) return 1;
                   return a.localeCompare(b);
                 })
-                .map(([tamanho, { confirmadas, pendentes, total }]) => (
+                .map(([tamanho, { confirmadas, pendentes, recusadas, total }]) => (
                   <TableRow key={tamanho}>
                     <TableCell className="font-medium">{tamanho}</TableCell>
                     <TableCell className="text-center">
@@ -211,9 +224,15 @@ export default async function PresentesPage() {
                         {pendentes}
                       </div>
                     </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1 text-red-500">
+                        <XCircle className="h-4 w-4" />
+                        {recusadas}
+                      </div>
+                    </TableCell>
                     <TableCell className="text-center font-medium">{total}</TableCell>
                     <TableCell className="text-right">
-                      R$ {(total * PRECO_PACOTE_FRALDA).toLocaleString('pt-BR')}
+                      R$ {((total - recusadas) * PRECO_PACOTE_FRALDA).toLocaleString('pt-BR')}
                     </TableCell>
                   </TableRow>
                 ))}

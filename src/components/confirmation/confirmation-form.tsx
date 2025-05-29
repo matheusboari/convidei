@@ -45,7 +45,7 @@ export function ConfirmationForm({
         body: JSON.stringify({
           id,
           isGroup,
-          confirmed: true,
+          confirmed,
           numberOfPeople: isGroup ? parseInt(numberOfPeople) : undefined,
           notifyEmail,
           email: notifyEmail ? email : undefined,
@@ -58,8 +58,8 @@ export function ConfirmationForm({
         throw new Error("Erro ao confirmar presença");
       }
 
-      setConfirmed(true);
-      toast.success("Presença confirmada com sucesso!");
+      setConfirmed(confirmed);
+      toast.success(confirmed ? "Presença confirmada com sucesso!" : "Ausência registrada com sucesso!");
     } catch (error) {
       toast.error("Erro ao confirmar presença. Tente novamente.");
       console.error(error);

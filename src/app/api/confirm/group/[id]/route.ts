@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-interface Params {
-  id: string;
-}
-
-export async function POST(req: NextRequest, { params }: { params: Params }) {
+export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { id } = params;
+    const id = await params.id;
     const { confirmed, numberOfPeople, notes, confirmedMembers } = await req.json();
 
     // Verificar se o grupo existe
@@ -49,7 +45,7 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
         await prisma.confirmation.update({
           where: { id: existingConfirmation.id },
           data: {
-            confirmed: isMemberConfirmed,
+            confirmed: !confirmed ? false : isMemberConfirmed,
             confirmationDate: isMemberConfirmed ? confirmDate : null,
           },
         });
@@ -58,34 +54,8 @@ export async function POST(req: NextRequest, { params }: { params: Params }) {
         await prisma.confirmation.create({
           data: {
             guestId: member.id,
-            confirmed: isMemberConfirmed,
+            confirmed: !confirmed ? false : isMemberConfirmed,
             confirmationDate: isMemberConfirmed ? confirmDate : null,
-          },
-        });
-      }
-    }
-    
-    // Se o líder não for membro do grupo, confirmar para ele também
-    if (group.leader && !group.guests.find(guest => guest.id === group.leader?.id)) {
-      const isLeaderConfirmed = confirmedMembers ? confirmedMembers.includes(group.leader.id) : confirmed;
-      const existingConfirmation = await prisma.confirmation.findUnique({
-        where: { guestId: group.leader.id }
-      });
-      
-      if (existingConfirmation) {
-        await prisma.confirmation.update({
-          where: { id: existingConfirmation.id },
-          data: {
-            confirmed: isLeaderConfirmed,
-            confirmationDate: isLeaderConfirmed ? confirmDate : null,
-          },
-        });
-      } else {
-        await prisma.confirmation.create({
-          data: {
-            guestId: group.leader.id,
-            confirmed: isLeaderConfirmed,
-            confirmationDate: isLeaderConfirmed ? confirmDate : null,
           },
         });
       }

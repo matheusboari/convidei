@@ -151,7 +151,7 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
                 <div className="mt-8 bg-blue-50 rounded-lg p-4 text-center">
                   <h3 className="font-semibold text-blue-700 mb-2">Seu presente sugerido</h3>
                   <p className="text-gray-700">
-                    Fralda tamanho <span className="font-medium">{guest.giftSize}</span>
+                    Fralda tamanho <span className="font-medium">{guest.giftSize}</span> + mimo
                   </p>
                   <p className="text-xs text-gray-500 mt-2">Marcas sugeridas:</p>
                   <div className="flex justify-center gap-2 mt-1">

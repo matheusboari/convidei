@@ -146,10 +146,15 @@ export function GuestsList({ guests }: GuestsListProps) {
                           )}
                         </TableCell>
                         <TableCell>
-                          {guest.confirmation?.confirmed ? (
+                          {guest.confirmation?.confirmed === true ? (
                             <span className="flex items-center text-green-600">
                               <Check className="mr-1 h-4 w-4" />
                               Confirmado
+                            </span>
+                          ) : guest.confirmation?.confirmed === false ? (
+                            <span className="flex items-center text-red-600">
+                              <X className="mr-1 h-4 w-4" />
+                              Recusou
                             </span>
                           ) : (
                             <span className="flex items-center text-orange-500">
@@ -261,10 +266,15 @@ export function GuestsList({ guests }: GuestsListProps) {
                             )}
                           </TableCell>
                           <TableCell>
-                            {guest.confirmation?.confirmed ? (
+                            {guest.confirmation?.confirmed === true ? (
                               <span className="flex items-center text-green-600">
                                 <Check className="mr-1 h-4 w-4" />
                                 Confirmado
+                              </span>
+                            ) : guest.confirmation?.confirmed === false ? (
+                              <span className="flex items-center text-red-600">
+                                <X className="mr-1 h-4 w-4" />
+                                Recusou
                               </span>
                             ) : (
                               <span className="flex items-center text-orange-500">
@@ -386,10 +396,15 @@ export function GuestsList({ guests }: GuestsListProps) {
                     )}
                   </TableCell>
                   <TableCell>
-                    {guest.confirmation?.confirmed ? (
+                    {guest.confirmation?.confirmed === true ? (
                       <span className="flex items-center text-green-600">
                         <Check className="mr-1 h-4 w-4" />
                         Confirmado
+                      </span>
+                    ) : guest.confirmation?.confirmed === false ? (
+                      <span className="flex items-center text-red-600">
+                        <X className="mr-1 h-4 w-4" />
+                        Recusou
                       </span>
                     ) : (
                       <span className="flex items-center text-orange-500">

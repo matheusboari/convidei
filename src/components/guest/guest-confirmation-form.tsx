@@ -43,7 +43,7 @@ interface GuestConfirmationFormProps {
 export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: GuestConfirmationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmationMessage, setShowConfirmationMessage] = useState(false);
-  const [isAbsent, setIsAbsent] = useState(false);
+  const [isAbsent, setIsAbsent] = useState(guest.confirmation?.confirmed === false);
   const [activeGroupId, setActiveGroupId] = useState<string | null>(groupInfo?.id || null);
   const [selectedMembers, setSelectedMembers] = useState<string[]>(() => {
     // Inicializar com todos os membros selecionados
@@ -107,6 +107,10 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
         } else {
           toast.success("Presença confirmada com sucesso!");
         }
+        // Atualizar a página após um pequeno delay para mostrar a mensagem
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       } else {
         setIsAbsent(true);
         if (targetGroup) {
@@ -144,13 +148,6 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
             }
           </AlertDescription>
         </Alert>
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={() => window.location.reload()}
-        >
-          Atualizar página
-        </Button>
       </div>
     );
   }
@@ -168,9 +165,11 @@ export function GuestConfirmationForm({ guest, groupInfo, leadingGroups }: Guest
         <p className="text-gray-600 mb-4">
           {isConfirmed 
             ? "Sua presença já está confirmada pelo líder do grupo!"
-            : `${groupInfo.leaderName} é o líder do grupo e será responsável por confirmar a presença de todos.`}
+            : isAbsent
+              ? "O grupo recusou o convite."
+              : `${groupInfo.leaderName} é o líder do grupo e será responsável por confirmar a presença de todos.`}
         </p>
-        {!isConfirmed && (
+        {!isConfirmed && !isAbsent && (
           <Alert className="bg-amber-50 border-amber-200">
             <AlertDescription className="text-amber-700">
               A confirmação de presença será gerenciada pelo líder do grupo.
