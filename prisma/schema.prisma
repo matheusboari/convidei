@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -21,58 +18,58 @@ model User {
 }
 
 model Group {
-  id           String       @id @default(uuid())
+  id           String        @id @default(uuid())
   name         String
   description  String?
-  inviteLink   String       @unique
-  leaderId     String?      // ID do convidado líder do grupo
-  leader       Guest?       @relation("GroupLeader", fields: [leaderId], references: [id])
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  guests       Guest[]      @relation("GroupMembers")
+  inviteLink   String        @unique
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  leaderId     String?
   confirmation Confirmation?
+  leader       Guest?        @relation("GroupLeader", fields: [leaderId], references: [id])
+  guests       Guest[]       @relation("GroupMembers")
 }
 
 model Guest {
-  id             String       @id @default(uuid())
-  name           String
-  email          String?
-  phone          String?
-  inviteLink     String       @unique
-  groupId        String?
-  group          Group?       @relation("GroupMembers", fields: [groupId], references: [id])
-  leadingGroups  Group[]      @relation("GroupLeader")
-  giftSize       String?      // Tamanho da fralda (P, M, G, GG, etc.)
-  giftQuantity   Int?         // Quantidade de fraldas
-  isChild        Boolean      @default(false) // Indica se o convidado é uma criança
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  confirmation   Confirmation?
+  id            String        @id @default(uuid())
+  name          String
+  email         String?
+  phone         String?
+  inviteLink    String        @unique
+  groupId       String?
+  giftSize      String?
+  giftQuantity  Int?
+  isChild       Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  confirmation  Confirmation?
+  leadingGroups Group[]       @relation("GroupLeader")
+  group         Group?        @relation("GroupMembers", fields: [groupId], references: [id])
 }
 
 model Confirmation {
   id               String    @id @default(uuid())
   confirmed        Boolean   @default(false)
   guestId          String?   @unique
-  guest            Guest?    @relation(fields: [guestId], references: [id])
   groupId          String?   @unique
-  group            Group?    @relation(fields: [groupId], references: [id])
-  numberOfPeople   Int?      // Número de pessoas confirmadas (para grupo)
+  numberOfPeople   Int?
   confirmationDate DateTime?
   notes            String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   notifyEmail      Boolean   @default(false)
+  group            Group?    @relation(fields: [groupId], references: [id])
+  guest            Guest?    @relation(fields: [guestId], references: [id])
   reminder         Reminder?
 }
 
 model Reminder {
-  id               String    @id @default(uuid())
-  confirmationId   String    @unique
-  confirmation     Confirmation @relation(fields: [confirmationId], references: [id])
-  scheduledFor     DateTime
-  sent            Boolean   @default(false)
-  sentAt          DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id             String       @id @default(uuid())
+  confirmationId String       @unique
+  scheduledFor   DateTime
+  sent           Boolean      @default(false)
+  sentAt         DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  confirmation   Confirmation @relation(fields: [confirmationId], references: [id])
 }

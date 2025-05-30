@@ -47,9 +47,13 @@ export function GuestsList({ guests }: GuestsListProps) {
   const [groupByGroup, setGroupByGroup] = useState(false);
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
-  // Separar convidados com e sem grupo
-  const guestsWithGroup = guests.filter(guest => guest.group);
-  const guestsWithoutGroup = guests.filter(guest => !guest.group);
+  // Separar convidados com e sem grupo usando useMemo
+  const { guestsWithGroup, guestsWithoutGroup } = useMemo(() => {
+    return {
+      guestsWithGroup: guests.filter(guest => guest.group),
+      guestsWithoutGroup: guests.filter(guest => !guest.group),
+    };
+  }, [guests]);
 
   // Agrupar convidados por grupo usando useMemo
   const groupedGuests = useMemo(() => {
@@ -82,7 +86,7 @@ export function GuestsList({ guests }: GuestsListProps) {
       });
       setCollapsedGroups(initialCollapsedState);
     }
-  }, [groupByGroup, groupedGuests]);
+  }, [groupByGroup]); // Remover groupedGuests da dependência para evitar loop infinito
 
   return (
     <div className="space-y-4">
