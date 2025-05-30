@@ -81,7 +81,8 @@ export default async function ConfirmationsPage() {
 
   // Contador de confirmações
   const totalConfirmed = confirmations.filter(c => c.confirmed).length;
-  const totalPending = guestsWithoutConfirmation.length + confirmations.filter(c => !c.confirmed).length;
+  const totalDeclined = confirmations.filter(c => !c.confirmed).length;
+  const totalPending = guestsWithoutConfirmation.length;
 
   // Formatar data relativa
   const formatDate = (date: Date | null) => {
@@ -97,7 +98,7 @@ export default async function ConfirmationsPage() {
         </h1>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xl">Confirmados</CardTitle>
@@ -117,6 +118,16 @@ export default async function ConfirmationsPage() {
             <p className="text-sm text-gray-500">pessoas ainda não confirmaram</p>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xl">Recusados</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-red-600">{totalDeclined}</div>
+            <p className="text-sm text-gray-500">pessoas não poderão comparecer</p>
+          </CardContent>
+        </Card>
         
         <Card>
           <CardHeader className="pb-2">
@@ -124,12 +135,12 @@ export default async function ConfirmationsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {Math.round((totalConfirmed / (totalConfirmed + totalPending)) * 100)}%
+              {Math.round((totalConfirmed / (totalConfirmed + totalPending + totalDeclined)) * 100)}%
             </div>
             <div className="mt-2 bg-gray-100 rounded-full h-2.5 overflow-hidden">
               <div 
                 className="bg-green-500 h-full" 
-                style={{ width: `${(totalConfirmed / (totalConfirmed + totalPending)) * 100}%` }}
+                style={{ width: `${(totalConfirmed / (totalConfirmed + totalPending + totalDeclined)) * 100}%` }}
               ></div>
             </div>
           </CardContent>
