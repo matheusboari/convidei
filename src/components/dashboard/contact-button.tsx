@@ -2,12 +2,14 @@
 
 import { Button } from '@/components/ui/button';
 import { MessageCircle } from 'lucide-react';
+import { getGuestWhatsAppUrl } from '@/lib/slug';
 
 interface ContactButtonProps {
   guest: {
     name: string;
     phone: string | null;
     inviteLink: string;
+    slug?: string | null;
   };
   isDisabled: boolean;
   disabledTitle?: string;
@@ -15,8 +17,12 @@ interface ContactButtonProps {
 
 export function ContactButton({ guest, isDisabled, disabledTitle }: ContactButtonProps) {
   const handleClick = () => {
-    const message = `Olá ${guest.name}! Você foi convidado(a) para o chá de fraldas da Antonella! \n\nData: 19 de julho de 2025\nHorário: 15:00\nLocal: Villa di Helena\nEndereço: Av. Amaleto Marino, 250 - Res. Santa Izabel\n\nPara confirmar sua presença, acesse o link: ${process.env.NEXT_PUBLIC_APP_URL}/confirmar/${guest.inviteLink}`;
-    const whatsappUrl = `https://wa.me/${guest.phone?.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = getGuestWhatsAppUrl({
+      name: guest.name,
+      phone: guest.phone,
+      slug: guest.slug || null,
+      inviteLink: guest.inviteLink,
+    });
     window.open(whatsappUrl, '_blank');
   };
 

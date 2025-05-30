@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '@/lib/auth';
+import { generateUniqueGroupSlug } from '@/lib/slug';
 
 export async function GET(req: NextRequest) {
   try {
@@ -61,7 +62,8 @@ export async function POST(request: Request) {
       });
     }
 
-    // Gerar link de convite único
+    // Gerar slug único e link de convite único
+    const slug = await generateUniqueGroupSlug(name);
     const inviteLink = `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`;
 
     // Converter "none" para null no leaderId
@@ -70,6 +72,7 @@ export async function POST(request: Request) {
     const group = await prisma.group.create({
       data: {
         name,
+        slug,
         description: description || null,
         inviteLink,
         leaderId: effectiveLeaderId,

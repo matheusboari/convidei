@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { GuestConfirmationForm } from '@/components/guest/guest-confirmation-form';
 import prisma from '@/lib/prisma';
+import { findGuestBySlugOrInviteLink } from '@/lib/slug';
 
 interface ConfirmPageProps {
   params: Promise<{
@@ -12,22 +13,8 @@ export default async function ConfirmPage({ params }: ConfirmPageProps) {
   try {
     const { id } = await params;
     
-    // Buscar o convidado pelo link de convite
-    const guest = await prisma.guest.findUnique({
-      where: {
-        inviteLink: id,
-      },
-      include: {
-        confirmation: true,
-        group: true,
-        leadingGroups: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    });
+    // Buscar o convidado pelo slug ou link de convite
+    const guest = await findGuestBySlugOrInviteLink(id);
 
     if (!guest) {
       notFound();

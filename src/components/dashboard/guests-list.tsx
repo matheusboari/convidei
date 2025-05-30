@@ -17,6 +17,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { DeleteGuestButton } from '@/components/dashboard/delete-guest-button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { getGuestConfirmationUrl } from '@/lib/slug';
 
 interface Guest {
   id: string;
@@ -27,6 +28,7 @@ interface Guest {
   giftSize: string | null;
   giftQuantity: number | null;
   inviteLink: string;
+  slug: string | null;
   group: {
     id: string;
     name: string;
@@ -190,7 +192,7 @@ export function GuestsList({ guests }: GuestsListProps) {
                                     asChild
                                   >
                                     <Link
-                                      href={`/confirmar/${guest.inviteLink}`}
+                                      href={getGuestConfirmationUrl(guest)}
                                       target="_blank"
                                     >
                                       <LinkIcon className="h-4 w-4" />
@@ -311,7 +313,7 @@ export function GuestsList({ guests }: GuestsListProps) {
                                         asChild
                                       >
                                         <Link
-                                          href={`/confirmar/${guest.inviteLink}`}
+                                          href={getGuestConfirmationUrl(guest)}
                                           target="_blank"
                                         >
                                           <LinkIcon className="h-4 w-4" />
@@ -441,7 +443,7 @@ export function GuestsList({ guests }: GuestsListProps) {
                                 asChild
                               >
                                 <Link
-                                  href={`/confirmar/${guest.inviteLink}`}
+                                  href={getGuestConfirmationUrl(guest)}
                                   target="_blank"
                                 >
                                   <LinkIcon className="h-4 w-4" />

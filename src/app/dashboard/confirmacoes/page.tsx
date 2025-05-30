@@ -21,6 +21,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import React from 'react';
 import { ContactButton } from '@/components/dashboard/contact-button';
+import { getGuestConfirmationUrl } from '@/lib/slug';
 
 export default async function ConfirmationsPage() {
   // Buscar todos os convidados e suas confirmações
@@ -40,6 +41,7 @@ export default async function ConfirmationsPage() {
               email: true,
               phone: true,
               inviteLink: true,
+              slug: true,
             },
           },
           leader: {
@@ -271,7 +273,8 @@ export default async function ConfirmationsPage() {
                         name: leader.name,
                         phone: leader.phone || null,
                         inviteLink: leader.inviteLink || '',
-                      } : { name: groupName, phone: null, inviteLink: '' };
+                        slug: leader.slug || null,
+                      } : { name: groupName, phone: null, inviteLink: '', slug: null };
                       return (
                         <TableRow key={confirmation.id} className="opacity-70 bg-red-50">
                           <TableCell className="font-medium">
@@ -303,7 +306,7 @@ export default async function ConfirmationsPage() {
                                 guest={leaderContact}
                                 isDisabled={!leaderContact.phone}
                               />
-                              <Link href={`/confirmar/${(leaderContact.inviteLink) || guests[0]?.inviteLink}`} target="_blank">
+                              <Link href={getGuestConfirmationUrl(leaderContact)} target="_blank">
                                 <Button
                                   size="sm"
                                   className="bg-purple-600 hover:bg-purple-700"
@@ -345,7 +348,7 @@ export default async function ConfirmationsPage() {
                                 }}
                                 isDisabled={!confirmation.guest.phone}
                               />
-                              <Link href={`/confirmar/${confirmation.guest.inviteLink}`} target="_blank">
+                              <Link href={getGuestConfirmationUrl(confirmation.guest)} target="_blank">
                                 <Button
                                   size="sm"
                                   className="bg-purple-600 hover:bg-purple-700"
@@ -407,12 +410,12 @@ export default async function ConfirmationsPage() {
                                 const leader = guests.find(g => g.group?.leaderId === g.id);
                                 return (
                                   <ContactButton
-                                    guest={leader || { name: groupName, phone: null, inviteLink: '' }}
+                                    guest={leader || { name: groupName, phone: null, inviteLink: '', slug: null }}
                                     isDisabled={!leader?.phone}
                                   />
                                 );
                               })()}
-                              <Link href={`/confirmar/${(guests.find(g => g.group?.leaderId === g.id)?.inviteLink) || guests[0]?.inviteLink}`} target="_blank">
+                              <Link href={getGuestConfirmationUrl(guests.find(g => g.group?.leaderId === g.id) || guests[0])} target="_blank">
                                 <Button
                                   size="sm"
                                   className="bg-purple-600 hover:bg-purple-700"
@@ -442,7 +445,7 @@ export default async function ConfirmationsPage() {
                                   guest={guest}
                                   isDisabled={!guest.phone}
                                 />
-                                <Link href={`/confirmar/${guest.inviteLink}`} target="_blank">
+                                <Link href={getGuestConfirmationUrl(guest)} target="_blank">
                                   <Button
                                     size="sm"
                                     className="bg-purple-600 hover:bg-purple-700"

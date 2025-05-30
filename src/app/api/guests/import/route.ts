@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { parse } from 'csv-parse/sync';
 import crypto from 'crypto';
+import { generateUniqueGuestSlug, generateUniqueGroupSlug } from '@/lib/slug';
 
 export async function POST(req: NextRequest) {
   try {
@@ -104,10 +105,12 @@ export async function POST(req: NextRequest) {
               });
               groupId = existingGroup.id;
             } else {
+              const groupSlug = await generateUniqueGroupSlug(groupName);
               const groupInviteLink = `group-${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`;
               const newGroup = await prisma.group.create({
                 data: { 
                   name: groupName,
+                  slug: groupSlug,
                   inviteLink: groupInviteLink,
                 },
               });
@@ -122,13 +125,15 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        // Gerar link de convite único
+        // Gerar slug único e link de convite único
+        const guestSlug = await generateUniqueGuestSlug(record.nome.trim());
         const inviteLink = crypto.randomUUID();
 
         // Criar convidado
         const guest = await prisma.guest.create({
           data: {
             name: record.nome.trim(),
+            slug: guestSlug,
             email: record.email?.trim() || null,
             phone: record.telefone?.trim() || null,
             groupId,

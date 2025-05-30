@@ -23,6 +23,7 @@ import { DeleteGroupButton } from '@/components/dashboard/delete-group-button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { getGuestConfirmationUrl } from '@/lib/slug';
 
 interface GroupWithRelations {
   id: string;
@@ -37,6 +38,7 @@ interface GroupWithRelations {
     name: string;
     email: string | null;
     inviteLink: string;
+    slug: string;
   } | null;
   _count: {
     guests: number;
@@ -64,6 +66,7 @@ export default async function GroupsPage() {
           name: true,
           email: true,
           inviteLink: true,
+          slug: true,
         },
       },
       guests: {
@@ -193,7 +196,7 @@ export default async function GroupsPage() {
                               <div>
                                 {group.leader ? (
                                   <Link
-                                    href={`/confirmar/${group.leader.inviteLink}`}
+                                    href={getGuestConfirmationUrl(group.leader)}
                                     target="_blank"
                                     className="inline-flex items-center justify-center h-8 w-8 rounded-md border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors"
                                   >

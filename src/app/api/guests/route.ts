@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { auth } from '@/lib/auth';
+import { generateUniqueGuestSlug } from '@/lib/slug';
 
 export async function GET(req: NextRequest) {
   try {
@@ -56,12 +57,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Gerar link de convite único
+    // Gerar slug único e link de convite único
+    const slug = await generateUniqueGuestSlug(name);
     const inviteLink = `${Math.random().toString(36).substring(2, 15)}-${Date.now().toString(36)}`;
 
     const guest = await prisma.guest.create({
       data: {
         name,
+        slug,
         email: email || null,
         phone: phone || null,
         groupId: groupId && groupId !== 'nenhum' ? groupId : null,
