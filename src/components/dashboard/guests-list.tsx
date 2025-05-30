@@ -46,7 +46,7 @@ interface GuestsListProps {
 }
 
 export function GuestsList({ guests }: GuestsListProps) {
-  const [groupByGroup, setGroupByGroup] = useState(false);
+  const [groupByGroup, setGroupByGroup] = useState(true);
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
 
   // Separar convidados com e sem grupo usando useMemo
@@ -79,16 +79,14 @@ export function GuestsList({ guests }: GuestsListProps) {
     }));
   };
 
-  // Inicializar todos os grupos como colapsados quando o agrupamento é ativado
+  // Inicializar todos os grupos como colapsados quando o componente é montado
   useEffect(() => {
-    if (groupByGroup) {
-      const initialCollapsedState: Record<string, boolean> = {};
-      Object.keys(groupedGuests).forEach(groupName => {
-        initialCollapsedState[groupName] = true;
-      });
-      setCollapsedGroups(initialCollapsedState);
-    }
-  }, [groupByGroup]); // Remover groupedGuests da dependência para evitar loop infinito
+    const initialCollapsedState: Record<string, boolean> = {};
+    Object.keys(groupedGuests).forEach(groupName => {
+      initialCollapsedState[groupName] = true;
+    });
+    setCollapsedGroups(initialCollapsedState);
+  }, [groupedGuests]); // Adicionar groupedGuests como dependência para atualizar quando os grupos mudarem
 
   return (
     <div className="space-y-4">
