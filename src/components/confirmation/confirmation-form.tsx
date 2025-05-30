@@ -76,7 +76,7 @@ export function ConfirmationForm({
         </p>
         <p className="text-gray-600">
           Obrigado por confirmar sua presença. Vamos aguardar você no dia 19 de
-          Julho, às 15:00.
+          Julho, às 15:30.
         </p>
         <p className="text-sm text-gray-500">
           Não esqueça de levar sua fralda de presente para a Antonella!

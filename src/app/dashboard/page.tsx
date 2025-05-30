@@ -43,7 +43,7 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-purple-800">Chá de Bebê da Antonella</h1>
-        <p className="text-lg text-gray-500">19 de Julho de 2025, às 15:00</p>
+        <p className="text-lg text-gray-500">19 de Julho de 2025, às 15:30</p>
       </div>
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
