@@ -18,6 +18,8 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { Gift, Users, CheckCircle, XCircle } from 'lucide-react';
 import { ProgressCircle } from '@/components/ui/progress-circle';
+import { Suspense } from 'react';
+import { LoadingState } from '@/components/ui/loading-state';
 
 // Preço médio por pacote de fraldas
 const PRECO_PACOTE_FRALDA = 50;
@@ -25,7 +27,11 @@ const PRECO_PACOTE_FRALDA = 50;
 // Tamanhos de fraldas disponíveis
 const TAMANHOS_FRALDA = ['P', 'M', 'G', 'XG', 'XXG'];
 
-export default async function PresentesPage() {
+// Configurar revalidação de cache a cada 30 segundos
+export const revalidate = 30;
+
+// Componente principal da página
+async function PresentesContent() {
   const session = await auth();
   
   if (!session) {
@@ -288,5 +294,24 @@ export default async function PresentesPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// Componente wrapper da página
+export default function PresentesPage() {
+  return (
+    <Suspense 
+      fallback={
+        <LoadingState 
+          title="Presentes"
+          description="Lista de presentes e fraldas"
+          showCards={true}
+          showTable={true}
+          tableRows={8}
+        />
+      }
+    >
+      <PresentesContent />
+    </Suspense>
   );
 } 

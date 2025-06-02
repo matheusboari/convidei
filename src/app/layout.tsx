@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 import { Toaster } from 'sonner';
 import { Providers } from '@/providers';
 
@@ -11,11 +13,22 @@ export const metadata: Metadata = {
   description: 'Aplicação para gerenciar convidados do chá de bebê da Antonella',
 };
 
-export default function RootLayout({
+// Configurações de otimização
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;
+
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const session = await auth();
+
+  if (!session) {
+    redirect('/login');
+  }
+
   return (
     <html lang="pt-BR">
       <body className={inter.className}>

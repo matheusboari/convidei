@@ -2,10 +2,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, UserPlus, UserCheck, Users, Gift, Calendar } from 'lucide-react';
 import prisma from '@/lib/prisma';
-import { auth } from '../../../auth';
+import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { LoadingState } from '@/components/ui/loading-state';
 
-export default async function DashboardPage() {
+// Configurar revalidação de cache a cada 30 segundos
+export const revalidate = 30;
+
+// Componente principal da página
+async function DashboardContent() {
   const session = await auth();
   
   if (!session) {
@@ -194,5 +200,23 @@ export default async function DashboardPage() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+// Componente wrapper da página
+export default function DashboardPage() {
+  return (
+    <Suspense 
+      fallback={
+        <LoadingState 
+          title="Dashboard"
+          description="Visão geral do evento"
+          showCards={true}
+          showTable={false}
+        />
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 } 

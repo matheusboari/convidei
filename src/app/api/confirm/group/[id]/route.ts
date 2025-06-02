@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -9,12 +10,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     // Verificar se o grupo existe
     const group = await prisma.group.findUnique({
       where: { id },
-      include: { 
-        guests: true,
-        leader: {
-          select: {
-            id: true,
-            name: true,
+      include: {
+        guests: {
+          include: {
+            confirmation: true,
           },
         },
       },
@@ -29,33 +28,25 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     // Data atual para registro da confirmação
     const confirmDate = confirmed ? new Date() : null;
-    
-    // Confirmar para cada membro do grupo
-    for (const member of group.guests) {
-      // Se confirmedMembers for fornecido, usar a lista para determinar se o membro está confirmado
-      const isMemberConfirmed = confirmedMembers ? confirmedMembers.includes(member.id) : confirmed;
-      
-      // Verificar se já existe uma confirmação para o membro
-      const existingConfirmation = await prisma.confirmation.findUnique({
-        where: { guestId: member.id },
-      });
-      
-      if (existingConfirmation) {
-        // Atualizar confirmação existente
+
+    // Atualizar confirmações dos membros do grupo
+    for (const guest of group.guests) {
+      if (guest.confirmation) {
         await prisma.confirmation.update({
-          where: { id: existingConfirmation.id },
+          where: { id: guest.confirmation.id },
           data: {
-            confirmed: !confirmed ? false : isMemberConfirmed,
-            confirmationDate: isMemberConfirmed ? confirmDate : null,
+            confirmed,
+            confirmationDate: confirmDate,
+            notes: notes || null,
           },
         });
       } else {
-        // Criar nova confirmação
         await prisma.confirmation.create({
           data: {
-            guestId: member.id,
-            confirmed: !confirmed ? false : isMemberConfirmed,
-            confirmationDate: isMemberConfirmed ? confirmDate : null,
+            guestId: guest.id,
+            confirmed,
+            confirmationDate: confirmDate,
+            notes: notes || null,
           },
         });
       }
@@ -87,6 +78,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         },
       });
     }
+
+    // Revalidar cache após confirmação
+    revalidatePath('/dashboard/confirmacoes');
     
     return new NextResponse(JSON.stringify({ success: true, groupConfirmation: true }), {
       status: 200,

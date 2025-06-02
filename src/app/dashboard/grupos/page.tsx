@@ -17,13 +17,18 @@ import {
 import { Users, Pencil, Link as LinkIcon, UserPlus, Crown, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
-import { auth } from '../../../../auth';
+import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { DeleteGroupButton } from '@/components/dashboard/delete-group-button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getGuestConfirmationUrl } from '@/lib/slug';
+import { Suspense } from 'react';
+import { LoadingState } from '@/components/ui/loading-state';
+
+// Configurar revalidação de cache a cada 30 segundos
+export const revalidate = 30;
 
 interface GroupWithRelations {
   id: string;
@@ -49,7 +54,8 @@ interface GroupWithRelations {
   } | null;
 }
 
-export default async function GroupsPage() {
+// Componente principal da página
+async function GroupsContent() {
   const session = await auth();
   
   if (!session || !session.user) {
@@ -246,5 +252,24 @@ export default async function GroupsPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// Componente wrapper da página
+export default function GroupsPage() {
+  return (
+    <Suspense 
+      fallback={
+        <LoadingState 
+          title="Grupos"
+          description="Lista de grupos de convidados"
+          showCards={true}
+          showTable={true}
+          tableRows={8}
+        />
+      }
+    >
+      <GroupsContent />
+    </Suspense>
   );
 } 

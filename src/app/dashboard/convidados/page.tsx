@@ -6,15 +6,31 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { UserPlus } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Users, Mail, Phone, Link as LinkIcon, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
-import { auth } from '../../../../auth';
+import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { LoadingState } from '@/components/ui/loading-state';
+import { ContactButton } from '@/components/dashboard/contact-button';
+import { getGuestConfirmationUrl } from '@/lib/slug';
 import { ImportGuestsButton } from '@/components/dashboard/import-guests-button';
 import { GuestsList } from '@/components/dashboard/guests-list';
 
-export default async function GuestsPage() {
+// Configurar revalidação de cache a cada 30 segundos
+export const revalidate = 30;
+
+// Componente principal da página
+async function ConvidadosContent() {
   const session = await auth();
   
   if (!session) {
@@ -88,5 +104,24 @@ export default async function GuestsPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// Componente wrapper da página
+export default function ConvidadosPage() {
+  return (
+    <Suspense 
+      fallback={
+        <LoadingState 
+          title="Convidados"
+          description="Lista de todos os convidados"
+          showCards={true}
+          showTable={true}
+          tableRows={12}
+        />
+      }
+    >
+      <ConvidadosContent />
+    </Suspense>
   );
 }

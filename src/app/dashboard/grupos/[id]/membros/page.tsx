@@ -17,9 +17,14 @@ import {
 import { Trash, User, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
-import { auth } from '../../../../../../auth';
+import { auth } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
 import { GroupMembersForm } from '@/components/dashboard/group-members-form';
+import { Suspense } from 'react';
+import { LoadingState } from '@/components/ui/loading-state';
+
+// Configurar revalidação de cache a cada 30 segundos
+export const revalidate = 30;
 
 interface GroupMembersPageProps {
   params: Promise<{
@@ -27,14 +32,13 @@ interface GroupMembersPageProps {
   }>;
 }
 
-export default async function GroupMembersPage({ params }: GroupMembersPageProps) {
+// Componente principal da página
+async function GroupMembersContent({ id }: { id: string }) {
   const session = await auth();
   
   if (!session) {
     redirect('/login');
   }
-  
-  const { id } = await params;
   
   const group = await prisma.group.findUnique({
     where: {
@@ -140,5 +144,26 @@ export default async function GroupMembersPage({ params }: GroupMembersPageProps
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// Componente wrapper da página
+export default async function GroupMembersPage({ params }: GroupMembersPageProps) {
+  const { id } = await params;
+  
+  return (
+    <Suspense 
+      fallback={
+        <LoadingState 
+          title="Membros do Grupo"
+          description="Gerenciando membros do grupo"
+          showCards={true}
+          showTable={true}
+          tableRows={6}
+        />
+      }
+    >
+      <GroupMembersContent id={id} />
+    </Suspense>
   );
 } 

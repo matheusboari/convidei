@@ -19,11 +19,16 @@ import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { ContactButton } from '@/components/dashboard/contact-button';
 import { getGuestConfirmationUrl } from '@/lib/slug';
+import { LoadingState } from '@/components/ui/loading-state';
 
-export default async function ConfirmationsPage() {
+// Configurar revalidação de cache a cada 30 segundos
+export const revalidate = 30;
+
+// Componente principal da página
+async function ConfirmationsContent() {
   // Buscar todos os convidados e suas confirmações
   const confirmations = await prisma.confirmation.findMany({
     include: {
@@ -96,6 +101,9 @@ export default async function ConfirmationsPage() {
         <h1 className="text-3xl font-bold tracking-tight text-purple-800">
           Confirmações
         </h1>
+        <div className="text-sm text-gray-500">
+          Atualiza automaticamente a cada 30 segundos
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-4">
@@ -478,5 +486,24 @@ export default async function ConfirmationsPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// Componente wrapper da página
+export default function ConfirmationsPage() {
+  return (
+    <Suspense 
+      fallback={
+        <LoadingState 
+          title="Confirmações"
+          description="Atualiza automaticamente a cada 30 segundos"
+          showCards={true}
+          showTable={true}
+          tableRows={10}
+        />
+      }
+    >
+      <ConfirmationsContent />
+    </Suspense>
   );
 } 

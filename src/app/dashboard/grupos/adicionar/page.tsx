@@ -4,8 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import prisma from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import { LoadingState } from '@/components/ui/loading-state';
 
-export default async function AddGroupPage() {
+// Configurar revalidação de cache a cada 30 segundos
+export const revalidate = 30;
+
+// Componente principal da página
+async function AddGroupContent() {
   const session = await auth();
   
   if (!session) {
@@ -32,5 +38,23 @@ export default async function AddGroupPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// Componente wrapper da página
+export default function AddGroupPage() {
+  return (
+    <Suspense 
+      fallback={
+        <LoadingState 
+          title="Adicionar Grupo"
+          description="Criando novo grupo"
+          showCards={true}
+          showTable={false}
+        />
+      }
+    >
+      <AddGroupContent />
+    </Suspense>
   );
 } 

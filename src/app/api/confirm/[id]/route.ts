@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { revalidatePath } from 'next/cache';
 
 export async function POST(
   req: NextRequest,
@@ -99,6 +100,9 @@ export async function POST(
         }
       }
       
+      // Revalidar cache após confirmação
+      revalidatePath('/dashboard/confirmacoes');
+      
       return new NextResponse(JSON.stringify({ success: true, groupConfirmation: true }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
@@ -130,6 +134,9 @@ export async function POST(
           },
         });
       }
+
+      // Revalidar cache após confirmação
+      revalidatePath('/dashboard/confirmacoes');
 
       return new NextResponse(JSON.stringify({ success: true, confirmation }), {
         status: 200,

@@ -1,8 +1,13 @@
 import { GroupForm } from '@/components/dashboard/group-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import prisma from '@/lib/prisma';
-import { auth } from '../../../../../auth';
+import { auth } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
+import { Suspense } from 'react';
+import { LoadingState } from '@/components/ui/loading-state';
+
+// Configurar revalidação de cache a cada 30 segundos
+export const revalidate = 30;
 
 interface EditGroupPageProps {
   params: Promise<{
@@ -10,14 +15,13 @@ interface EditGroupPageProps {
   }>;
 }
 
-export default async function EditGroupPage({ params }: EditGroupPageProps) {
+// Componente principal da página
+async function EditGroupContent({ id }: { id: string }) {
   const session = await auth();
   
   if (!session) {
     redirect('/login');
   }
-  
-  const { id } = await params;
   
   const group = await prisma.group.findUnique({
     where: {
@@ -63,5 +67,25 @@ export default async function EditGroupPage({ params }: EditGroupPageProps) {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+// Componente wrapper da página
+export default async function EditGroupPage({ params }: EditGroupPageProps) {
+  const { id } = await params;
+  
+  return (
+    <Suspense 
+      fallback={
+        <LoadingState 
+          title="Editar Grupo"
+          description="Atualizando informações do grupo"
+          showCards={true}
+          showTable={false}
+        />
+      }
+    >
+      <EditGroupContent id={id} />
+    </Suspense>
   );
 } 
