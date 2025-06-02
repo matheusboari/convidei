@@ -1,7 +1,7 @@
 import { GuestForm } from '@/components/dashboard/guest-form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import prisma from '@/lib/prisma';
-import { auth } from '../../../../../auth';
+import { auth } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
 
 interface EditGuestPageProps {

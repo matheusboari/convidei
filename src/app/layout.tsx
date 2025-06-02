@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { auth } from '@/lib/auth';
-import { redirect } from 'next/navigation';
 import { Toaster } from 'sonner';
 import { Providers } from '@/providers';
 
@@ -23,12 +21,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-
-  if (!session) {
-    redirect('/login');
-  }
-
   return (
     <html lang="pt-BR">
       <body className={inter.className}>
