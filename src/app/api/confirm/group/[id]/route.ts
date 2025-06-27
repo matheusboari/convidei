@@ -31,12 +31,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     // Atualizar confirmações dos membros do grupo
     for (const guest of group.guests) {
+      // Se confirmedMembers foi enviado, só confirmar membros que estão na lista
+      const shouldConfirm = confirmed && (!confirmedMembers || confirmedMembers.includes(guest.id));
+      
       if (guest.confirmation) {
         await prisma.confirmation.update({
           where: { id: guest.confirmation.id },
           data: {
-            confirmed,
-            confirmationDate: confirmDate,
+            confirmed: shouldConfirm,
+            confirmationDate: shouldConfirm ? confirmDate : null,
             notes: notes || null,
           },
         });
@@ -44,8 +47,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         await prisma.confirmation.create({
           data: {
             guestId: guest.id,
-            confirmed,
-            confirmationDate: confirmDate,
+            confirmed: shouldConfirm,
+            confirmationDate: shouldConfirm ? confirmDate : null,
             notes: notes || null,
           },
         });

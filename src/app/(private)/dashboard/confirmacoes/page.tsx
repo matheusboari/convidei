@@ -40,13 +40,8 @@ async function ConfirmationsContent() {
       group: {
         include: {
           guests: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              phone: true,
-              inviteLink: true,
-              slug: true,
+            include: {
+              confirmation: true,
             },
           },
           leader: {
@@ -197,7 +192,16 @@ async function ConfirmationsContent() {
                           </div>
                           <div className="pl-6 mt-2 text-sm text-gray-500">
                             {confirmation.group?.guests.map(guest => (
-                              <div key={guest.id}>{guest.name}</div>
+                              <div key={guest.id} className="flex items-center gap-2">
+                                {guest.confirmation?.confirmed ? (
+                                  <span className="text-green-600">✓</span>
+                                ) : (
+                                  <span className="text-red-600">✗</span>
+                                )}
+                                <span className={guest.confirmation?.confirmed ? '' : 'line-through text-gray-400'}>
+                                  {guest.name}
+                                </span>
+                              </div>
                             ))}
                           </div>
                         </TableCell>
@@ -303,7 +307,12 @@ async function ConfirmationsContent() {
                             </div>
                             <div className="pl-6 mt-2 text-sm text-gray-500">
                               {guests.map(guest => (
-                                <div key={guest.id}>{guest.name}</div>
+                                <div key={guest.id} className="flex items-center gap-2">
+                                  <span className="text-red-600">✗</span>
+                                  <span className="line-through text-gray-400">
+                                    {guest.name}
+                                  </span>
+                                </div>
                               ))}
                             </div>
                           </TableCell>
